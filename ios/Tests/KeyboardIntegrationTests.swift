@@ -371,6 +371,163 @@ import SwiftUI
         m.text(try XCTUnwrap(touches.target(point,correct:true,learn:true)).values[0])
         XCTAssertEqual(d.text,"Qq")
     }
+    private func shiftControl(in view:UIView)->ShiftControl? {
+        if let control=view as? ShiftControl { return control }
+        return view.subviews.lazy.compactMap{self.shiftControl(in:$0)}.first
+    }
+    private func keyTouch(_ code:String,model:KeyboardModel,touches:KeyboardTouchCoordinator) throws -> (KeySpec,CGPoint) {
+        let key=try XCTUnwrap(model.rows.flatMap{$0}.first{$0.code==code})
+        let frame=try XCTUnwrap(touches.frames[key.id])
+        return (key,CGPoint(x:frame.midX,y:frame.midY))
+    }
+    private func typeKey(_ code:String,expecting value:String,model:KeyboardModel,touches:KeyboardTouchCoordinator) throws {
+        let (key,point)=try keyTouch(code,model:model,touches:touches)
+        touches.updateKeys(model.rows)
+        touches.begin(key.id,holdingShift:model.useHeldShift())
+        defer { touches.end(key.id) }
+        let selected=try XCTUnwrap(touches.target(point,correct:true,learn:true,start:key.id,preferCurrent:model.isShifted))
+        XCTAssertEqual(selected.values[0],value)
+        model.text(selected.values[0],holdingShift:touches.holdingShift(key.id))
+    }
+    func testFirstKeyUsesCurrentShiftInsteadOfUnshiftedTouchSnapshot() async throws {
+        for (language,plain,shifted) in [(InputLanguage.english,"r","R"),(.korean,"ㄱ","ㄲ")] {
+            for mode in [KeyboardTouchMode.seek,.flick] {
+                for held in [false,true] {
+                    let m=try model(language),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+                    m.store.settings.autoCapitalization=false
+                    let key=try XCTUnwrap(m.rows.flatMap{$0}.first{$0.code=="R"})
+                    let point=CGPoint(x:20,y:20)
+                    touches.frames=[key.id:CGRect(x:0,y:0,width:40,height:40)]
+                    touches.updateKeys(m.rows);touches.begin(key.id,holdingShift:false)
+                    XCTAssertEqual(touches.key(key.id,start:key.id)?.values[0],plain)
+                    // Simulate a character touch captured before Shift's update,
+                    // with no SwiftUI render between the modifier and dispatch.
+                    if held { m.beginShift() } else { m.shift() }
+                    touches.updateKeys(m.rows)
+                    let selected=try XCTUnwrap(mode == .seek
+                        ? touches.target(point,correct:true,learn:false,start:key.id,preferCurrent:m.isShifted)
+                        : touches.key(key.id,start:key.id,preferCurrent:m.isShifted))
+                    XCTAssertEqual(selected.values[0],shifted)
+                    m.text(selected.values[0],holdingShift:touches.holdingShift(key.id))
+                    touches.end(key.id)
+                    if held { m.endShift() }
+                    XCTAssertEqual(d.text,shifted)
+                    XCTAssertFalse(m.isShifted);XCTAssertFalse(m.capsLocked)
+                }
+            }
+        }
+    }
+    func testHeldShiftTypesMultipleUppercaseLettersUntilRelease() async throws {
+        let m=try model(.english),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+        m.store.settings.autoCapitalization=false
+        let window=keyboardWindow(m,touches:touches)
+        defer { window.isHidden=true }
+        try await renderKeyboard(window)
+        let shift=try XCTUnwrap(shiftControl(in:window))
+        XCTAssertFalse(shift.isExclusiveTouch)
+        let press=try XCTUnwrap(shift.gestureRecognizers?.compactMap{$0 as? UILongPressGestureRecognizer}.first)
+        XCTAssertEqual(press.minimumPressDuration,0)
+        XCTAssertFalse(press.cancelsTouchesInView)
+        shift.handlePress(.began)
+        XCTAssertTrue(m.isShifted)
+        XCTAssertEqual(m.rows.flatMap{$0}.first{$0.code=="R"}?.label,"R")
+        // A second finger can arrive before SwiftUI renders another frame.
+        try typeKey("R",expecting:"R",model:m,touches:touches)
+        try await renderKeyboard(window)
+        try typeKey("T",expecting:"T",model:m,touches:touches)
+        XCTAssertTrue(m.shiftHeld);XCTAssertFalse(m.capsLocked)
+        shift.handlePress(.ended)
+        XCTAssertFalse(m.isShifted)
+        try typeKey("R",expecting:"r",model:m,touches:touches)
+        XCTAssertEqual(d.text,"RTr")
+        // A chord must not count as the first tap of a Caps Lock double tap.
+        shift.handlePress(.began);shift.handlePress(.ended)
+        XCTAssertTrue(m.shifted);XCTAssertFalse(m.capsLocked)
+    }
+    func testHeldShiftTypesKoreanDoubleConsonants() async throws {
+        let m=try model(.korean),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+        let window=keyboardWindow(m,touches:touches)
+        defer { window.isHidden=true }
+        try await renderKeyboard(window)
+        let shift=try XCTUnwrap(shiftControl(in:window))
+        shift.handlePress(.began)
+        XCTAssertEqual(m.rows.flatMap{$0}.first{$0.code=="R"}?.label,"ㄲ")
+        for (code,value) in [("R","ㄲ"),("K","ㅏ"),("T","ㅆ"),("K","ㅏ")] {
+            try typeKey(code,expecting:value,model:m,touches:touches)
+        }
+        shift.handlePress(.ended)
+        try typeKey("R",expecting:"ㄱ",model:m,touches:touches)
+        try typeKey("K",expecting:"ㅏ",model:m,touches:touches)
+        XCTAssertEqual(d.text,"까싸가")
+        XCTAssertFalse(m.isShifted)
+    }
+    func testHeldShiftSurvivesShiftFingerReleasingBeforeLetter() async throws {
+        for mode in [KeyboardTouchMode.seek,.flick] {
+            let m=try model(.english),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+            m.store.settings.autoCapitalization=false;m.store.settings.touchMode=mode
+            let window=keyboardWindow(m,touches:touches)
+            defer { window.isHidden=true }
+            try await renderKeyboard(window)
+            let shift=try XCTUnwrap(shiftControl(in:window))
+            shift.handlePress(.began)
+            let (key,point)=try keyTouch("R",model:m,touches:touches)
+            touches.begin(key.id,holdingShift:m.useHeldShift())
+            let startKey=try XCTUnwrap(touches.target(point,correct:true,learn:true,start:key.id))
+            shift.handlePress(.ended)
+            try await renderKeyboard(window)
+            XCTAssertFalse(m.isShifted)
+            XCTAssertEqual(touches.target(point,correct:true,learn:false)?.values[0],"r")
+            let selected=mode == .seek ? try XCTUnwrap(touches.target(point,correct:true,learn:false,start:key.id)):startKey
+            m.text(selected.values[0],holdingShift:touches.holdingShift(key.id));touches.end(key.id)
+            try typeKey("T",expecting:"t",model:m,touches:touches)
+            XCTAssertEqual(d.text,"Rt")
+            XCTAssertFalse(touches.holdingShift(key.id))
+        }
+    }
+    func testShiftControlPreservesTapCapsLockAndAccessibility() async throws {
+        let m=try model(.english),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+        m.store.settings.autoCapitalization=false
+        let window=keyboardWindow(m,touches:touches)
+        defer { window.isHidden=true }
+        try await renderKeyboard(window)
+        let shift=try XCTUnwrap(shiftControl(in:window))
+        shift.handlePress(.began);shift.handlePress(.ended)
+        XCTAssertTrue(m.shifted);XCTAssertFalse(m.shiftHeld);XCTAssertFalse(m.capsLocked)
+        shift.handlePress(.began);shift.handlePress(.ended)
+        XCTAssertTrue(m.capsLocked)
+        shift.handlePress(.began)
+        try typeKey("R",expecting:"R",model:m,touches:touches)
+        shift.handlePress(.ended)
+        XCTAssertTrue(m.capsLocked)
+        try typeKey("T",expecting:"T",model:m,touches:touches)
+        XCTAssertEqual(d.text,"RT")
+        shift.handlePress(.began);shift.handlePress(.ended)
+        XCTAssertFalse(m.isShifted);XCTAssertFalse(m.capsLocked)
+        try await Task.sleep(nanoseconds:360_000_000)
+        XCTAssertTrue(shift.accessibilityActivate())
+        XCTAssertTrue(m.shifted);XCTAssertFalse(m.shiftHeld)
+    }
+    func testHeldShiftCancellationAndKeyboardDepartureDoNotLatch() async throws {
+        let m=try model(.english),touches=KeyboardTouchCoordinator()
+        m.store.settings.autoCapitalization=false
+        let window=keyboardWindow(m,touches:touches)
+        defer { window.isHidden=true }
+        try await renderKeyboard(window)
+        let shift=try XCTUnwrap(shiftControl(in:window))
+        for state in [UIGestureRecognizer.State.cancelled,.ended] {
+            shift.handlePress(.began);shift.handlePress(state,inside:false)
+            XCTAssertFalse(m.isShifted);XCTAssertFalse(m.shiftHeld)
+        }
+        shift.handlePress(.began);m.suspend();shift.handlePress(.ended)
+        XCTAssertFalse(m.isShifted);XCTAssertFalse(m.capsLocked)
+        shift.handlePress(.began);m.cancelForExternalChange();shift.handlePress(.ended)
+        XCTAssertFalse(m.isShifted);XCTAssertFalse(m.shiftHeld)
+        shift.handlePress(.began)
+        m.toggleSymbols();try await renderKeyboard(window)
+        shift.handlePress(.ended)
+        XCTAssertFalse(m.shiftHeld)
+        XCTAssertFalse(m.isShifted)
+    }
     func testWordSeparatorsAndPunctuationStayAfterComposition() async throws {
         let m=try model(.korean),d=Document();d.attach(m)
         for c in "ㅎㅏㄴㄱㅡㄹ" { m.text(String(c)) }

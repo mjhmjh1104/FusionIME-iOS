@@ -8,12 +8,27 @@ struct KeyFramesPreference:PreferenceKey {
 @MainActor final class KeyboardTouchCoordinator:ObservableObject {
     var frames:[String:CGRect]=[:]
     private var keys:[String:KeySpec]=[:]
+    private var pressedKeys:[String:[String:KeySpec]]=[:]
+    private var heldShiftTouches=Set<String>()
     private let correction=TouchCorrection()
     @Published private(set) var active:[String:String]=[:]
     func updateKeys(_ rows:[[KeySpec]]) {
         keys=Dictionary(rows.flatMap{$0}.filter{!$0.isSpacer}.map{($0.id,$0)},uniquingKeysWith:{$1})
     }
-    func target(_ point:CGPoint,correct:Bool,learn:Bool) -> KeySpec? {
+    func begin(_ start:String,holdingShift:Bool) {
+        // Preserve the modifier for a key whose finger lifts after Shift's.
+        pressedKeys[start]=keys
+        if holdingShift { heldShiftTouches.insert(start) } else { heldShiftTouches.remove(start) }
+    }
+    func holdingShift(_ start:String)->Bool { heldShiftTouches.contains(start) }
+    private func keys(start:String?,preferCurrent:Bool)->[String:KeySpec] {
+        preferCurrent ? keys:start.flatMap{pressedKeys[$0]} ?? keys
+    }
+    func key(_ id:String,start:String?=nil,preferCurrent:Bool=false)->KeySpec? {
+        keys(start:start,preferCurrent:preferCurrent)[id]
+    }
+    func target(_ point:CGPoint,correct:Bool,learn:Bool,start:String?=nil,preferCurrent:Bool=false) -> KeySpec? {
+        let keys=keys(start:start,preferCurrent:preferCurrent)
         let codes=keys.compactMapValues { key -> String? in
             guard let code=key.code,code.count==1 || ["SEMICOLON","APOSTROPHE","PERIOD","COMMA","SLASH"].contains(code) else { return nil }
             return code
@@ -22,6 +37,6 @@ struct KeyFramesPreference:PreferenceKey {
         return id.flatMap { keys[$0] }
     }
     func highlight(start:String,key:KeySpec?) { active[start]=key?.id }
-    func end(_ start:String) { active.removeValue(forKey:start) }
+    func end(_ start:String) { active.removeValue(forKey:start);pressedKeys.removeValue(forKey:start);heldShiftTouches.remove(start) }
     func reset() { active=[:] }
 }

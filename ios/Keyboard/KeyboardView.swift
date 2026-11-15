@@ -170,7 +170,7 @@ struct KeyboardView:View {
                         if split && offset==row.count/2 { Spacer().frame(width:gap) }
                         if key.isSpacer { Color.clear.frame(width:keyWidth).accessibilityHidden(true) }
                         else {
-                            KeyCap(key:key,settings:settings,touches:touches,action:{model.text($0)},flickAction:{model.flick($0,key:key)})
+                            KeyCap(key:key,settings:settings,touches:touches,refreshKeys:refreshTouchKeys,pressBegan:model.useHeldShift,action:{model.text($0,holdingShift:$1)},flickAction:{model.flick($0,key:$1,holdingShift:$2)})
                                 .frame(width:keyWidth)
                         }
                     }
@@ -180,15 +180,29 @@ struct KeyboardView:View {
             }
         }
     }
+    private func refreshTouchKeys()->Bool {
+        // Touch dispatch must use the model now, not a previous SwiftUI frame.
+        touches.updateKeys(model.rows)
+        return model.isShifted
+    }
     var shiftKey:some View {
-        Button { if model.symbols { model.symbolsSecond.toggle() } else if model.mode.language == .pinyin { model.text("'") } else { model.shift() } } label: {
-            Group {
-                if model.symbols { Text(model.symbolsSecond ? "123":"#+=").font(.system(size:14)) }
-                else if model.mode.language == .pinyin { Text("'").font(.system(size:24)) }
-                else { Image(systemName:model.capsLocked ? "capslock.fill":model.shifted ? "shift.fill":"shift").font(.system(size:20)) }
-            }.frame(maxWidth:.infinity,maxHeight:.infinity)
-                .background(model.shifted && !model.symbols ? KeyboardPalette.key:KeyboardPalette.utility,in:RoundedRectangle(cornerRadius:6))
-        }.accessibilityLabel("Shift")
+        Group {
+            if model.symbols {
+                Button { model.symbolsSecond.toggle() } label: {
+                    Text(model.symbolsSecond ? "123":"#+=").font(.system(size:14)).frame(maxWidth:.infinity,maxHeight:.infinity)
+                }.accessibilityLabel("Shift")
+            } else if model.mode.language == .pinyin {
+                Button { model.text("'") } label: { Text("'").font(.system(size:24)).frame(maxWidth:.infinity,maxHeight:.infinity) }
+            } else {
+                ShiftKey(shifted:model.isShifted,capsLocked:model.capsLocked,press:{
+                    model.beginShift();touches.updateKeys(model.rows)
+                },release:{ cancelled in
+                    model.endShift(cancelled:cancelled);touches.updateKeys(model.rows)
+                },tap:{ model.shift();touches.updateKeys(model.rows) })
+                    .onDisappear { model.endShift(cancelled:true);touches.updateKeys(model.rows) }
+            }
+        }.frame(maxWidth:.infinity,maxHeight:.infinity)
+            .background(model.isShifted && !model.symbols ? KeyboardPalette.key:KeyboardPalette.utility,in:RoundedRectangle(cornerRadius:6))
     }
     var kanaKeyboard:some View {
         VStack(spacing:wide ? 5:7) {
@@ -205,7 +219,7 @@ struct KeyboardView:View {
                         }
                     }.frame(width:wide ? 54:44)
                     ForEach(row) { key in
-                        KeyCap(key:key,settings:settings,touches:touches,action:{model.text($0)},flickAction:{model.flick($0,key:key)})
+                        KeyCap(key:key,settings:settings,touches:touches,refreshKeys:refreshTouchKeys,pressBegan:model.useHeldShift,action:{model.text($0,holdingShift:$1)},flickAction:{model.flick($0,key:$1,holdingShift:$2)})
                     }
                     Group {
                         switch index {
@@ -276,46 +290,61 @@ struct KeyCap:View {
     let key:KeySpec
     let settings:KeyboardSettings
     @ObservedObject var touches:KeyboardTouchCoordinator
-    let action:(String)->Void
-    let flickAction:(FlickAction)->Void
+    let refreshKeys:()->Bool
+    let pressBegan:()->Bool
+    let action:(String,Bool)->Void
+    let flickAction:(FlickAction,KeySpec,Bool)->Void
     @State private var pressed=false
     @State private var direction=0
     @State private var longPressed=false
     @State private var startKey:KeySpec?
+    @GestureState private var tracking=false
     private var highlighted:Bool { key.flick || settings.touchMode == .flick ? pressed:touches.active.values.contains(key.id) }
     private var labels:[String] { key.hints ?? key.values }
     var body:some View {
         face.background(GeometryReader { geometry in Color.clear.preference(key:KeyFramesPreference.self,value:[key.id:geometry.frame(in:.named("fusion.keys"))]) })
-            .gesture(DragGesture(minimumDistance:0,coordinateSpace:.named("fusion.keys")).onChanged { value in
+            .gesture(DragGesture(minimumDistance:0,coordinateSpace:.named("fusion.keys"))
+                .updating($tracking) { _,tracking,_ in tracking=true }
+                .onChanged { value in
+                    let preferCurrent=refreshKeys()
                     if startKey == nil {
                         longPressed=false
-                        startKey=key.flick ? key:touches.target(value.startLocation,correct:settings.touchCorrection,learn:true) ?? key
+                        touches.begin(key.id,holdingShift:pressBegan())
+                        startKey=key.flick ? touches.key(key.id,start:key.id) ?? key:touches.target(value.startLocation,correct:settings.touchCorrection,learn:true,start:key.id) ?? key
                     }
                     pressed=true;direction=flickDirection(value.translation)
                     if !key.flick && settings.touchMode == .seek {
-                        touches.highlight(start:key.id,key:touches.target(value.location,correct:settings.touchCorrection,learn:false))
+                        touches.highlight(start:key.id,key:touches.target(value.location,correct:settings.touchCorrection,learn:false,start:key.id,preferCurrent:preferCurrent))
                     }
                 }.onEnded { value in
-                    defer { pressed=false;longPressed=false;touches.end(key.id);startKey=nil }
+                    defer { endPress() }
                     guard !longPressed else { return }
+                    let preferCurrent=refreshKeys()
+                    let selected=touches.key(startKey?.id ?? key.id,start:key.id,preferCurrent:preferCurrent) ?? startKey ?? key
                     let direction=flickDirection(value.translation)
-                    if key.flick { action(key.values[min(direction,key.values.count-1)]) }
+                    if key.flick { send(selected.values[min(direction,selected.values.count-1)]) }
                     else if settings.touchMode == .seek {
-                        if let selected=touches.target(value.location,correct:settings.touchCorrection,learn:false) { action(selected.values[0]) }
+                        if let selected=touches.target(value.location,correct:settings.touchCorrection,learn:false,start:key.id,preferCurrent:preferCurrent) { send(selected.values[0]) }
                     }
-                    else if direction==2 { flickAction(settings.flickUp) }
-                    else if direction==4 { flickAction(settings.flickDown) }
-                    else { action((startKey ?? key).values[0]) }
+                    else if direction==2 { flickAction(settings.flickUp,selected,touches.holdingShift(key.id)) }
+                    else if direction==4 { flickAction(settings.flickDown,selected,touches.holdingShift(key.id)) }
+                    else { send(selected.values[0]) }
                 })
                 .simultaneousGesture(LongPressGesture(minimumDuration:0.35).onEnded { _ in
                     if key.values.count>1 && !key.flick { longPressed=true;pressed=false;touches.end(key.id) }
                 })
-                .accessibilityAction { action(key.values[0]) }
-                .accessibilityActions { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { action(value) } } }
-                .contextMenu { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { action(value);pressed=false } } }
+                .accessibilityAction {
+                    let preferCurrent=refreshKeys()
+                    send((touches.key(key.id,preferCurrent:preferCurrent) ?? key).values[0])
+                }
+                .accessibilityActions { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { send(value) } } }
+                .contextMenu { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { send(value);pressed=false } } }
                 .accessibilityLabel(key.label).accessibilityAddTraits(.isButton)
-                .onDisappear { pressed=false;touches.end(key.id) }
+                .onChange(of:tracking) { if !$0 { endPress() } }
+                .onDisappear { endPress() }
     }
+    private func endPress() { pressed=false;longPressed=false;touches.end(key.id);startKey=nil }
+    private func send(_ value:String) { action(value,touches.holdingShift(key.id)) }
     var face:some View {
         VStack(spacing:1) {
             Text(pressed && key.flick ? labels[min(direction,labels.count-1)] : key.label)
@@ -341,6 +370,63 @@ struct KeyCap:View {
         if abs(size.width)>abs(size.height) { return size.width<0 ? 1:3 }
         return size.height<0 ? 2:4
     }
+}
+struct ShiftKey:UIViewRepresentable {
+    let shifted:Bool
+    let capsLocked:Bool
+    let press:()->Void
+    let release:(Bool)->Void
+    let tap:()->Void
+    func makeUIView(context:Context)->ShiftControl {
+        let control=ShiftControl(type:.custom)
+        update(control);return control
+    }
+    func updateUIView(_ control:ShiftControl,context:Context) { update(control) }
+    private func update(_ control:ShiftControl) {
+        control.press=press;control.release=release;control.tap=tap
+        control.setImage(UIImage(systemName:capsLocked ? "capslock.fill":shifted ? "shift.fill":"shift",withConfiguration:UIImage.SymbolConfiguration(pointSize:20)),for:.normal)
+        control.accessibilityTraits=shifted ? [.button,.selected]:.button
+    }
+    static func dismantleUIView(_ control:ShiftControl,coordinator:()) { control.invalidate() }
+}
+final class ShiftControl:UIButton,UIGestureRecognizerDelegate {
+    var press:(()->Void)?
+    var release:((Bool)->Void)?
+    var tap:(()->Void)?
+    private var pressed=false
+    override init(frame:CGRect) {
+        super.init(frame:frame)
+        isExclusiveTouch=false;tintColor = .label;accessibilityLabel="Shift"
+        // SwiftUI's ancestor recognizers can delay UIButton touch-down events.
+        // Recognize the press immediately and coexist with the letter gestures.
+        let gesture=UILongPressGestureRecognizer(target:self,action:#selector(trackPress(_:)))
+        gesture.minimumPressDuration=0
+        gesture.cancelsTouchesInView=false
+        gesture.delaysTouchesBegan=false;gesture.delaysTouchesEnded=false
+        gesture.delegate=self;addGestureRecognizer(gesture)
+    }
+    required init?(coder:NSCoder) { fatalError("init(coder:) has not been implemented") }
+    @objc private func trackPress(_ gesture:UILongPressGestureRecognizer) {
+        handlePress(gesture.state,inside:bounds.contains(gesture.location(in:self)))
+    }
+    func handlePress(_ state:UIGestureRecognizer.State,inside:Bool=true) {
+        switch state {
+        case .began:
+            guard !pressed else { return }
+            pressed=true;isHighlighted=true;press?()
+        case .ended:finish(cancelled:!inside)
+        case .cancelled,.failed:finish(cancelled:true)
+        default:break
+        }
+    }
+    func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer,shouldRecognizeSimultaneouslyWith otherGestureRecognizer:UIGestureRecognizer)->Bool { true }
+    private func finish(cancelled:Bool) {
+        guard pressed else { return };pressed=false;isHighlighted=false;release?(cancelled)
+    }
+    // SwiftUI's onDisappear cancels the modifier. Teardown itself must not
+    // publish model changes while SwiftUI is updating its view hierarchy.
+    func invalidate() { pressed=false;isHighlighted=false;press=nil;release=nil;tap=nil }
+    override func accessibilityActivate()->Bool { tap?();return true }
 }
 struct SpaceKey:View {
     let title:String
