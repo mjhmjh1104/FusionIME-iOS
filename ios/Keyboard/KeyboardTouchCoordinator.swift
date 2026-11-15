@@ -7,9 +7,12 @@ struct KeyFramesPreference:PreferenceKey {
 }
 @MainActor final class KeyboardTouchCoordinator:ObservableObject {
     var frames:[String:CGRect]=[:]
-    var keys:[String:KeySpec]=[:]
+    private var keys:[String:KeySpec]=[:]
     private let correction=TouchCorrection()
     @Published private(set) var active:[String:String]=[:]
+    func updateKeys(_ rows:[[KeySpec]]) {
+        keys=Dictionary(rows.flatMap{$0}.filter{!$0.isSpacer}.map{($0.id,$0)},uniquingKeysWith:{$1})
+    }
     func target(_ point:CGPoint,correct:Bool,learn:Bool) -> KeySpec? {
         let codes=keys.compactMapValues { key -> String? in
             guard let code=key.code,code.count==1 || ["SEMICOLON","APOSTROPHE","PERIOD","COMMA","SLASH"].contains(code) else { return nil }

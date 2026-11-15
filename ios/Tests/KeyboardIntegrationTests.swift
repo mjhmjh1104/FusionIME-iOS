@@ -2,6 +2,7 @@ import XCTest
 import FusionCore
 import Combine
 import UIKit
+import SwiftUI
 
 @MainActor final class KeyboardIntegrationTests:XCTestCase {
     func testAppAndKeyboardIncludeMatchingLocalizations() throws {
@@ -308,6 +309,67 @@ import UIKit
             XCTAssertEqual(numbered[2].last?.values.first,"ー")
             XCTAssertEqual(numbered.flatMap{$0}.filter{$0.values.first=="ー"}.count,1)
         }
+    }
+    private func keyboardWindow(_ model:KeyboardModel,touches:KeyboardTouchCoordinator)->UIWindow {
+        let window=UIWindow(frame:CGRect(x:0,y:0,width:390,height:250))
+        window.rootViewController=UIHostingController(rootView:KeyboardView(model:model,store:model.store,globe:AnyView(EmptyView()),touches:touches))
+        window.makeKeyAndVisible()
+        return window
+    }
+    private func renderKeyboard(_ window:UIWindow) async throws {
+        window.layoutIfNeeded()
+        // Let SwiftUI deliver row changes and geometry preferences to the same
+        // coordinator used by KeyCap's touch-down and touch-up handlers.
+        try await Task.sleep(nanoseconds:100_000_000)
+        window.layoutIfNeeded()
+    }
+    func testShiftAndCapsLockRefreshTouchInputWithoutGeometryChanges() async throws {
+        for correction in [false,true] {
+            let m=try model(.english),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+            m.store.settings.autoCapitalization=false
+            let window=keyboardWindow(m,touches:touches)
+            defer { window.isHidden=true }
+            try await renderKeyboard(window)
+            let key=try XCTUnwrap(m.rows.flatMap{$0}.first{$0.code=="Q"})
+            let frame=try XCTUnwrap(touches.frames[key.id])
+            let point=CGPoint(x:frame.midX,y:frame.midY),frames=touches.frames
+            func input(_ expected:String) throws {
+                let selected=try XCTUnwrap(touches.target(point,correct:correction,learn:true))
+                XCTAssertEqual(selected.values[0],expected)
+                m.text(selected.values[0])
+            }
+            m.shift();try await renderKeyboard(window)
+            XCTAssertEqual(touches.frames,frames)
+            try input("Q")
+            XCTAssertFalse(m.shifted)
+            try await renderKeyboard(window);try input("q")
+            XCTAssertEqual(d.text,"Qq")
+            m.shift();m.shift();try await renderKeyboard(window)
+            XCTAssertTrue(m.capsLocked)
+            try input("Q");try await renderKeyboard(window);try input("Q")
+            XCTAssertEqual(d.text,"QqQQ")
+            try await Task.sleep(nanoseconds:360_000_000)
+            m.shift();try await renderKeyboard(window)
+            XCTAssertFalse(m.capsLocked)
+            try input("q")
+            XCTAssertEqual(d.text,"QqQQq")
+        }
+    }
+    func testAutomaticCapitalizationRefreshesTouchInputWithoutGeometryChanges() async throws {
+        let m=try model(.english),d=Document(),touches=KeyboardTouchCoordinator();d.attach(m)
+        m.store.settings.autoCapitalization=true;m.capitalization = .sentences
+        let window=keyboardWindow(m,touches:touches)
+        defer { window.isHidden=true }
+        try await renderKeyboard(window)
+        let key=try XCTUnwrap(m.rows.flatMap{$0}.first{$0.code=="Q"})
+        let frame=try XCTUnwrap(touches.frames[key.id]),frames=touches.frames
+        let point=CGPoint(x:frame.midX,y:frame.midY)
+        m.updateCapitalization();try await renderKeyboard(window)
+        XCTAssertTrue(m.shifted);XCTAssertEqual(touches.frames,frames)
+        m.text(try XCTUnwrap(touches.target(point,correct:true,learn:true)).values[0])
+        try await renderKeyboard(window)
+        m.text(try XCTUnwrap(touches.target(point,correct:true,learn:true)).values[0])
+        XCTAssertEqual(d.text,"Qq")
     }
     func testWordSeparatorsAndPunctuationStayAfterComposition() async throws {
         let m=try model(.korean),d=Document();d.attach(m)

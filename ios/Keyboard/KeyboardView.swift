@@ -15,8 +15,12 @@ struct KeyboardView:View {
     let globe:AnyView
     weak var menuContainer:UIView?
     @State private var wide=false
-    @StateObject private var touches=KeyboardTouchCoordinator()
+    @StateObject private var touches:KeyboardTouchCoordinator
     @State private var emojiGroup=0
+    @MainActor init(model:KeyboardModel,store:SettingsStore,globe:AnyView,menuContainer:UIView?=nil,touches:KeyboardTouchCoordinator?=nil) {
+        self.model=model;self.store=store;self.globe=globe;self.menuContainer=menuContainer
+        _touches=StateObject(wrappedValue:touches ?? KeyboardTouchCoordinator())
+    }
     private var settings:KeyboardSettings { model.effectiveSettings }
     private var syllables:Bool { [.kanaSyllables,.kanaIroha].contains(model.mode.layout) && !model.symbols && !model.isNumberPad && !model.emoji }
     private var candidateHeight:CGFloat { wide ? 28:36 }
@@ -82,9 +86,13 @@ struct KeyboardView:View {
         .coordinateSpace(name:"fusion.keys")
         .onPreferenceChange(KeyFramesPreference.self) { frames in
             touches.frames=frames
-            touches.keys=Dictionary(model.rows.flatMap{$0}.filter{!$0.isSpacer}.map{($0.id,$0)},uniquingKeysWith:{$1})
+            touches.updateKeys(model.rows)
         }
-        .onChange(of:model.rows) { _ in touches.reset() }
+        .onChange(of:model.rows) { rows in
+            // Shift and Caps Lock change key values without moving their frames.
+            touches.updateKeys(rows)
+            touches.reset()
+        }
     }
     var toolbar:some View {
         HStack(spacing:4) {
