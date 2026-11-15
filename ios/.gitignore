@@ -1,0 +1,27 @@
+.DS_Store
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+Config/Local.xcconfig
+FusionCore/.swiftpm/
+Vendor/
+*.building
+__pycache__/
+Native/Sources/
+Native/Archives/
+Native/Artifacts/
+
+# Local porting documentation and validation artifacts
+/README.ko.md
+/PORTING.md
+/Validation/
+
+# Recreated by ../build.sh from the bundled Android data and pinned sources
+/Resources/lexicon.sqlite
+/Resources/manifest.json
+/Resources/Native/
+/FusionCore/Native/
+/FusionCore/Sources/FusionCore/Resources/Korean/
+/FusionCore/Sources/FusionCore/Resources/Vietnamese/
+/Native/artifacts.json

@@ -1,0 +1,3 @@
+DEVELOPMENT_TEAM = YOUR_TEAM_ID
+FUSION_BUNDLE_ID = com.yourname.FusionIME
+FUSION_APP_GROUP = group.com.yourname.FusionIME

@@ -1,0 +1,34 @@
+name: iOS
+on:
+  push:
+    paths: ['ios/**', 'android/**', 'build.sh', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', 'android/**', 'build.sh', '.github/workflows/ios.yml']
+jobs:
+  validate:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native build tools
+        run: |
+          brew install bazelisk
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup default 1.88.0
+          rustup target add aarch64-apple-darwin aarch64-apple-ios aarch64-apple-ios-sim
+      - name: Prepare dictionaries and native libraries
+        run: ./build.sh --prepare-only
+      - name: Core tests
+        run: python3 ios/Scripts/test_core.py
+      - name: Project and dictionary validation
+        run: |
+          python3 ios/Scripts/verify_project.py
+          python3 ios/Scripts/native_manifest.py --verify
+      - name: Build iOS app and keyboard extension
+        run: ./build.sh
+      - name: iPhone Release build
+        run: DESTINATION='generic/platform=iOS' CONFIGURATION=Release ./build.sh
+      - name: Keyboard integration tests
+        run: bash ios/Scripts/test_ios.sh

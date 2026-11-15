@@ -1,0 +1,29 @@
+FusionIME for iOS
+
+This port is based on the FusionIME Android source distributed in ../android.
+FusionIME: https://github.com/Lee0701/FusionIME
+The original project is distributed under GNU GPL version 3. The port retains
+that license. See FusionIME-GPL-3.0.txt and the source distribution.
+
+Keyboard layouts and Hangul combination tables are imported from FusionIME.
+Korean dictionary data: National Institute of Korean Language Standard Korean
+Dictionary (https://stdict.korean.go.kr), libhangul (https://github.com/libhangul/libhangul).
+Vietnamese dictionary data: chunom.org, retained from the original project.
+VietnameseComposer.swift adapts the original repository's VietPad TelexIM,
+VniIM and VietKeyInput algorithm by Au D. Xuong, Quan Nguyen and Quang D. Le.
+Vietnamese binary dictionaries are copied without modification from app/viet.
+Cangjie, Quick, Dayi dictionaries: another_android_cangjie / FusionIME.
+See Cangjie-GPL-2.0.txt.
+Cantonese data: https://github.com/yuetyam/jyutping-android (CC0 1.0).
+Pinyin and traditional Pinyin dictionaries: Android Open Source Project,
+Copyright (C) 2009 The Android Open Source Project, Apache License 2.0.
+See AOSP-Pinyin.txt.
+
+Japanese dictionary: google/mozc, pinned in Scripts/mozc-source.json.
+See Mozc.txt for BSD notices and Mozc-dictionary.txt for the IPAdic and Okinawa
+dictionary conditions. This port includes the Mozc C++ runtime and its data file, rebuilt for Apple platforms.
+
+The iOS app does not include Android .so/JNI binaries. Native C/C++ engines are rebuilt from source. Chewing 0.12.0 is LGPL-2.1-or-later; see Chewing-LGPL-2.1.txt. LatinIME is Apache-2.0; see AOSP-LatinIME.txt.
+The Swift input engines,
+SQLite importer, and app/extension glue are distributed with this source tree.
+Foundation, UIKit, SwiftUI, UITextChecker and SQLite are system dependencies.

@@ -1,0 +1,13 @@
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+SWIFT_VERSION = 5.0
+TARGETED_DEVICE_FAMILY = 1,2
+CURRENT_PROJECT_VERSION = 1
+MARKETING_VERSION = 1.0.0
+CODE_SIGN_STYLE = Automatic
+// Replace these with identifiers registered to your Apple Developer team.
+FUSION_BUNDLE_ID = ee.oyatl.ime.fusion.ios
+FUSION_APP_GROUP = group.ee.oyatl.ime.fusion.ios
+DEVELOPMENT_TEAM =
+#include? "Local.xcconfig"
+// Native engine XCFrameworks support iPhone and Apple Silicon Simulator.
+ARCHS = arm64

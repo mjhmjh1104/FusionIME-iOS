@@ -1,0 +1,227 @@
+[
+  {
+    "mode": "telex",
+    "keys": "aas",
+    "expected": "ấ"
+  },
+  {
+    "mode": "telex",
+    "keys": "awz",
+    "expected": "a"
+  },
+  {
+    "mode": "telex",
+    "keys": "ddz",
+    "expected": "d"
+  },
+  {
+    "mode": "telex",
+    "keys": "tieengs",
+    "expected": "tiếng"
+  },
+  {
+    "mode": "telex",
+    "keys": "hoaf",
+    "expected": "hoà"
+  },
+  {
+    "mode": "telex",
+    "keys": "hoas",
+    "expected": "hoá"
+  },
+  {
+    "mode": "telex",
+    "keys": "quas",
+    "expected": "quá"
+  },
+  {
+    "mode": "telex",
+    "keys": "thuowng",
+    "expected": "thuơng"
+  },
+  {
+    "mode": "telex",
+    "keys": "ddawng",
+    "expected": "đăng"
+  },
+  {
+    "mode": "telex",
+    "keys": "owf",
+    "expected": "ờ"
+  },
+  {
+    "mode": "telex",
+    "keys": "uow",
+    "expected": "uơ"
+  },
+  {
+    "mode": "telex",
+    "keys": "aafz",
+    "expected": "â"
+  },
+  {
+    "mode": "telex",
+    "keys": "aass",
+    "expected": "â"
+  },
+  {
+    "mode": "telex",
+    "keys": "oong",
+    "expected": "ông"
+  },
+  {
+    "mode": "telex",
+    "keys": "tieesng",
+    "expected": "tiếng"
+  },
+  {
+    "mode": "telex",
+    "keys": "nguowif",
+    "expected": "nguời"
+  },
+  {
+    "mode": "telex",
+    "keys": "huyeefn",
+    "expected": "huyền"
+  },
+  {
+    "mode": "telex",
+    "keys": "vieetj",
+    "expected": "việt"
+  },
+  {
+    "mode": "telex",
+    "keys": "Vieetj",
+    "expected": "Việt"
+  },
+  {
+    "mode": "telex",
+    "keys": "asb",
+    "expected": "áb"
+  },
+  {
+    "mode": "telex",
+    "keys": "aa",
+    "expected": "â"
+  },
+  {
+    "mode": "telex",
+    "keys": "aw",
+    "expected": "ă"
+  },
+  {
+    "mode": "telex",
+    "keys": "dd",
+    "expected": "đ"
+  },
+  {
+    "mode": "telex",
+    "keys": "ddawngj",
+    "expected": "đặng"
+  },
+  {
+    "mode": "vni",
+    "keys": "a61",
+    "expected": "ấ"
+  },
+  {
+    "mode": "vni",
+    "keys": "a80",
+    "expected": "a"
+  },
+  {
+    "mode": "vni",
+    "keys": "d90",
+    "expected": "d"
+  },
+  {
+    "mode": "vni",
+    "keys": "tie6ng1",
+    "expected": "tiếng"
+  },
+  {
+    "mode": "vni",
+    "keys": "hoa2",
+    "expected": "hoà"
+  },
+  {
+    "mode": "vni",
+    "keys": "hoa1",
+    "expected": "hoá"
+  },
+  {
+    "mode": "vni",
+    "keys": "qua1",
+    "expected": "quá"
+  },
+  {
+    "mode": "vni",
+    "keys": "thu7o7ng",
+    "expected": "thương"
+  },
+  {
+    "mode": "vni",
+    "keys": "da8ng",
+    "expected": "dăng"
+  },
+  {
+    "mode": "vni",
+    "keys": "o72",
+    "expected": "ờ"
+  },
+  {
+    "mode": "vni",
+    "keys": "u7o7",
+    "expected": "ươ"
+  },
+  {
+    "mode": "vni",
+    "keys": "a620",
+    "expected": "â"
+  },
+  {
+    "mode": "vni",
+    "keys": "a11",
+    "expected": "a"
+  },
+  {
+    "mode": "vni",
+    "keys": "o6ng",
+    "expected": "ông"
+  },
+  {
+    "mode": "vni",
+    "keys": "vie6t5",
+    "expected": "việt"
+  },
+  {
+    "mode": "vni",
+    "keys": "Vie6t5",
+    "expected": "Việt"
+  },
+  {
+    "mode": "vni",
+    "keys": "a1b",
+    "expected": "áb"
+  },
+  {
+    "mode": "vni",
+    "keys": "a6",
+    "expected": "â"
+  },
+  {
+    "mode": "vni",
+    "keys": "a8",
+    "expected": "ă"
+  },
+  {
+    "mode": "vni",
+    "keys": "d9",
+    "expected": "đ"
+  },
+  {
+    "mode": "vni",
+    "keys": "da8ng5",
+    "expected": "dặng"
+  }
+]

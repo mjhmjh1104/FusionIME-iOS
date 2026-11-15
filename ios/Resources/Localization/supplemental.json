@@ -1,0 +1,1207 @@
+{
+  "%d개 항목을 읽었습니다.": {
+    "en": "Read %d entries.",
+    "ja": "%d件を読み込みました。",
+    "zh-Hans": "已读取 %d 个条目。",
+    "zh-Hant": "已讀取 %d 個項目。",
+    "vi": "Đã đọc %d mục.",
+    "ko": "%d個 項目을 읽었습니다."
+  },
+  "12키 반복 탭으로 가나 순환": {
+    "en": "Cycle kana by tapping",
+    "ja": "連続タップでかなを切り替え",
+    "zh-Hans": "连按切换假名",
+    "zh-Hant": "連按切換假名",
+    "vi": "Nhấn liên tiếp để đổi kana",
+    "ko": "12키 反復 탭으로 가나 循環"
+  },
+  "12키 플릭": {
+    "en": "12-key flick input",
+    "ja": "12キーフリック入力",
+    "zh-Hans": "12键滑动输入",
+    "zh-Hant": "12鍵滑動輸入",
+    "vi": "Nhập vuốt 12 phím",
+    "ko": "12키 플릭"
+  },
+  "FusionIME 백업(JSON), Android 설정(XML·JSON)": {
+    "en": "FusionIME backups (JSON), Android settings (XML/JSON)",
+    "ja": "FusionIMEバックアップ（JSON）、Android設定（XML・JSON）",
+    "zh-Hans": "FusionIME 备份（JSON）、Android 设置（XML/JSON）",
+    "zh-Hant": "FusionIME 備份（JSON）、Android 設定（XML/JSON）",
+    "vi": "Bản sao lưu FusionIME (JSON), cài đặt Android (XML/JSON)",
+    "ko": "FusionIME 백업(JSON), Android 設定(XML·JSON)"
+  },
+  "FusionIME 설정": {
+    "en": "FusionIME Settings",
+    "ja": "FusionIME設定",
+    "zh-Hans": "FusionIME 设置",
+    "zh-Hant": "FusionIME 設定",
+    "vi": "Cài đặt FusionIME",
+    "ko": "FusionIME 設定"
+  },
+  "FusionIME 입력 연습": {
+    "en": "FusionIME typing practice",
+    "ja": "FusionIME入力練習",
+    "zh-Hans": "FusionIME 输入练习",
+    "zh-Hant": "FusionIME 輸入練習",
+    "vi": "Luyện nhập FusionIME",
+    "ko": "FusionIME 入力 練習"
+  },
+  "Mozc 사전": {
+    "en": "Mozc Dictionary",
+    "ja": "Mozc辞書",
+    "zh-Hans": "Mozc 词典",
+    "zh-Hant": "Mozc 辭典",
+    "vi": "Từ điển Mozc",
+    "ko": "Mozc 辭典"
+  },
+  "Return": {
+    "en": "Return",
+    "ja": "改行",
+    "zh-Hans": "换行",
+    "zh-Hant": "換行",
+    "vi": "Xuống dòng",
+    "ko": "줄바꿈"
+  },
+  "TSV 사전 가져오기": {
+    "en": "Import TSV Dictionary",
+    "ja": "TSV辞書を読み込む",
+    "zh-Hans": "导入 TSV 词典",
+    "zh-Hant": "匯入 TSV 辭典",
+    "vi": "Nhập từ điển TSV",
+    "ko": "TSV 辭典 가져오기"
+  },
+  "TSV 사전 내보내기": {
+    "en": "Export TSV Dictionary",
+    "ja": "TSV辞書を書き出す",
+    "zh-Hans": "导出 TSV 词典",
+    "zh-Hant": "匯出 TSV 辭典",
+    "vi": "Xuất từ điển TSV",
+    "ko": "TSV 辭典 내보내기"
+  },
+  "iPhone 설정 열기": {
+    "en": "Open iPhone Settings",
+    "ja": "iPhoneの設定を開く",
+    "zh-Hans": "打开 iPhone 设置",
+    "zh-Hant": "開啟 iPhone 設定",
+    "vi": "Mở Cài đặt iPhone",
+    "ko": "iPhone 설정 열기"
+  },
+  "가져오기 실패: %@": {
+    "en": "Import failed: %@",
+    "ja": "読み込み失敗：%@",
+    "zh-Hans": "导入失败：%@",
+    "zh-Hant": "匯入失敗：%@",
+    "vi": "Không thể nhập: %@",
+    "ko": "가져오기 失敗: %@"
+  },
+  "검색": {
+    "en": "Search",
+    "ja": "検索",
+    "zh-Hans": "搜索",
+    "zh-Hant": "搜尋",
+    "vi": "Tìm kiếm",
+    "ko": "檢索"
+  },
+  "공백": {
+    "en": "space",
+    "ja": "空白",
+    "zh-Hans": "空格",
+    "zh-Hant": "空白",
+    "vi": "dấu cách",
+    "ko": "空白"
+  },
+  "공통 설정": {
+    "en": "Use Default",
+    "ja": "共通設定",
+    "zh-Hans": "使用通用设置",
+    "zh-Hant": "使用共用設定",
+    "vi": "Dùng cài đặt chung",
+    "ko": "共通 設定"
+  },
+  "기기 내 학습": {
+    "en": "On-Device Learning",
+    "ja": "端末内の学習",
+    "zh-Hans": "本机学习",
+    "zh-Hant": "裝置內學習",
+    "vi": "Học trên thiết bị",
+    "ko": "機器 內 學習"
+  },
+  "기타 고지": {
+    "en": "Other Notices",
+    "ja": "その他の表記",
+    "zh-Hans": "其他声明",
+    "zh-Hant": "其他聲明",
+    "vi": "Thông báo khác",
+    "ko": "其他 告知"
+  },
+  "끄기": {
+    "en": "Off",
+    "ja": "オフ",
+    "zh-Hans": "关闭",
+    "zh-Hant": "關閉",
+    "vi": "Tắt",
+    "ko": "끄기"
+  },
+  "다음 언어": {
+    "en": "Next Language",
+    "ja": "次の言語",
+    "zh-Hans": "下一种语言",
+    "zh-Hant": "下一種語言",
+    "vi": "Ngôn ngữ tiếp theo",
+    "ko": "다음 言語"
+  },
+  "다음 키보드": {
+    "en": "Next Keyboard",
+    "ja": "次のキーボード",
+    "zh-Hans": "下一个键盘",
+    "zh-Hant": "下一個鍵盤",
+    "vi": "Bàn phím tiếp theo",
+    "ko": "다음 키보드"
+  },
+  "단어 추가": {
+    "en": "Add Word",
+    "ja": "単語を追加",
+    "zh-Hans": "添加词语",
+    "zh-Hant": "加入詞語",
+    "vi": "Thêm từ",
+    "ko": "單語 追加"
+  },
+  "단어·문맥 학습": {
+    "en": "Learn Words and Context",
+    "ja": "単語と文脈の学習",
+    "zh-Hans": "学习词语和上下文",
+    "zh-Hant": "學習詞語和上下文",
+    "vi": "Học từ và ngữ cảnh",
+    "ko": "單語·文脈 學習"
+  },
+  "닫기": {
+    "en": "Close",
+    "ja": "閉じる",
+    "zh-Hans": "关闭",
+    "zh-Hant": "關閉",
+    "vi": "Đóng",
+    "ko": "닫기"
+  },
+  "라이선스 리소스를 찾을 수 없습니다.": {
+    "en": "License file not found.",
+    "ja": "ライセンスファイルが見つかりません。",
+    "zh-Hans": "找不到许可证文件。",
+    "zh-Hant": "找不到授權條款檔案。",
+    "vi": "Không tìm thấy tệp giấy phép.",
+    "ko": "라이선스 리소스를 찾을 수 없습니다."
+  },
+  "문자와 기호 전환": {
+    "en": "Switch Letters and Symbols",
+    "ja": "文字と記号を切り替え",
+    "zh-Hans": "切换文字和符号",
+    "zh-Hant": "切換文字與符號",
+    "vi": "Chuyển chữ và ký hiệu",
+    "ko": "文字와 記號 轉換"
+  },
+  "밝게": {
+    "en": "Light",
+    "ja": "ライト",
+    "zh-Hans": "浅色",
+    "zh-Hant": "淺色",
+    "vi": "Sáng",
+    "ko": "밝게"
+  },
+  "백업 가져오기": {
+    "en": "Import Backup",
+    "ja": "バックアップを読み込む",
+    "zh-Hans": "导入备份",
+    "zh-Hant": "匯入備份",
+    "vi": "Nhập bản sao lưu",
+    "ko": "백업 가져오기"
+  },
+  "백업 내보내기": {
+    "en": "Export Backup",
+    "ja": "バックアップを書き出す",
+    "zh-Hans": "导出备份",
+    "zh-Hant": "匯出備份",
+    "vi": "Xuất bản sao lưu",
+    "ko": "백업 내보내기"
+  },
+  "백업과 복원": {
+    "en": "Backup and Restore",
+    "ja": "バックアップと復元",
+    "zh-Hans": "备份与恢复",
+    "zh-Hant": "備份與還原",
+    "vi": "Sao lưu và khôi phục",
+    "ko": "백업과 復元"
+  },
+  "변환 사전을 읽지 못했습니다. 앱을 다시 설치해 주세요.": {
+    "en": "Cannot load the conversion dictionary. Reinstall the app.",
+    "ja": "変換辞書を読み込めません。アプリを再インストールしてください。",
+    "zh-Hans": "无法读取转换词典。请重新安装应用。",
+    "zh-Hant": "無法讀取轉換辭典。請重新安裝 App。",
+    "vi": "Không thể tải từ điển chuyển đổi. Hãy cài đặt lại ứng dụng.",
+    "ko": "轉換 辭典을 읽지 못했습니다. 앱을 다시 設置해 주세요."
+  },
+  "변환 엔진이나 사전을 읽지 못했습니다. 앱을 다시 설치해 주세요.": {
+    "en": "Cannot load the input engine or dictionary. Reinstall the app.",
+    "ja": "変換エンジンまたは辞書を読み込めません。アプリを再インストールしてください。",
+    "zh-Hans": "无法读取输入引擎或词典。请重新安装应用。",
+    "zh-Hant": "無法讀取輸入引擎或辭典。請重新安裝 App。",
+    "vi": "Không thể tải bộ gõ hoặc từ điển. Hãy cài đặt lại ứng dụng.",
+    "ko": "轉換 엔진이나 辭典을 읽지 못했습니다. 앱을 다시 設置해 주세요."
+  },
+  "변환 후보 접기": {
+    "en": "Collapse Candidates",
+    "ja": "変換候補を折りたたむ",
+    "zh-Hans": "收起候选词",
+    "zh-Hant": "收合候選字",
+    "vi": "Thu gọn gợi ý",
+    "ko": "轉換 候補 접기"
+  },
+  "변환 후보 펼치기": {
+    "en": "Expand Candidates",
+    "ja": "変換候補を展開",
+    "zh-Hans": "展开候选词",
+    "zh-Hant": "展開候選字",
+    "vi": "Mở rộng gợi ý",
+    "ko": "轉換 候補 펼치기"
+  },
+  "변환할 단어": {
+    "en": "Word",
+    "ja": "変換後の単語",
+    "zh-Hans": "转换后的词语",
+    "zh-Hant": "轉換後的詞語",
+    "vi": "Từ cần chuyển đổi",
+    "ko": "轉換할 單語"
+  },
+  "복원 실패: %@": {
+    "en": "Restore failed: %@",
+    "ja": "復元失敗：%@",
+    "zh-Hans": "恢复失败：%@",
+    "zh-Hant": "還原失敗：%@",
+    "vi": "Không thể khôi phục: %@",
+    "ko": "復元 失敗: %@"
+  },
+  "분할 간격": {
+    "en": "Split Gap",
+    "ja": "分割の間隔",
+    "zh-Hans": "分割间距",
+    "zh-Hant": "分割間距",
+    "vi": "Khoảng cách tách",
+    "ko": "分割 間隔"
+  },
+  "붙여넣기": {
+    "en": "Paste",
+    "ja": "ペースト",
+    "zh-Hans": "粘贴",
+    "zh-Hant": "貼上",
+    "vi": "Dán",
+    "ko": "붙여넣기"
+  },
+  "붙여넣기는 설정에서 전체 접근 허용을 켜면 사용할 수 있습니다.": {
+    "en": "Enable Allow Full Access in Settings to paste.",
+    "ja": "ペーストするには設定で「フルアクセスを許可」をオンにしてください。",
+    "zh-Hans": "请在设置中开启“允许完全访问”以使用粘贴。",
+    "zh-Hant": "請在設定中開啟「允許完整取用」以使用貼上功能。",
+    "vi": "Bật Cho phép truy cập đầy đủ trong Cài đặt để dán.",
+    "ko": "붙여넣기는 설정에서 ‘전체 접근 허용’을 켜면 使用할 수 있습니다."
+  },
+  "사용 중인 언어": {
+    "en": "Active Languages",
+    "ja": "使用中の言語",
+    "zh-Hans": "使用中的语言",
+    "zh-Hant": "使用中的語言",
+    "vi": "Ngôn ngữ đang dùng",
+    "ko": "使用 中인 言語"
+  },
+  "사용자 사전": {
+    "en": "User Dictionary",
+    "ja": "ユーザー辞書",
+    "zh-Hans": "用户词典",
+    "zh-Hant": "使用者辭典",
+    "vi": "Từ điển người dùng",
+    "ko": "使用者 辭典"
+  },
+  "삭제": {
+    "en": "Delete",
+    "ja": "削除",
+    "zh-Hans": "删除",
+    "zh-Hant": "刪除",
+    "vi": "Xóa",
+    "ko": "削除"
+  },
+  "설정": {
+    "en": "Settings",
+    "ja": "設定",
+    "zh-Hans": "设置",
+    "zh-Hant": "設定",
+    "vi": "Cài đặt",
+    "ko": "設定"
+  },
+  "설정 → 일반 → 키보드 → 키보드 → 새로운 키보드 추가 → FusionIME": {
+    "en": "Settings → General → Keyboard → Keyboards → Add New Keyboard → FusionIME",
+    "ja": "設定 → 一般 → キーボード → キーボード → 新しいキーボードを追加 → FusionIME",
+    "zh-Hans": "设置 → 通用 → 键盘 → 键盘 → 添加新键盘 → FusionIME",
+    "zh-Hant": "設定 → 一般 → 鍵盤 → 鍵盤 → 新增鍵盤 → FusionIME",
+    "vi": "Cài đặt → Cài đặt chung → Bàn phím → Bàn phím → Thêm bàn phím mới → FusionIME",
+    "ko": "설정 → 일반 → 키보드 → 키보드 → 새로운 키보드 추가 → FusionIME"
+  },
+  "설정과 사용자 사전을 저장합니다. 학습 기록은 포함하지 않습니다.": {
+    "en": "Includes settings and your user dictionary, but not learned history.",
+    "ja": "設定とユーザー辞書を保存します。学習履歴は含みません。",
+    "zh-Hans": "保存设置和用户词典，不包含学习记录。",
+    "zh-Hant": "儲存設定與使用者辭典，不包含學習記錄。",
+    "vi": "Lưu cài đặt và từ điển người dùng, không bao gồm lịch sử học.",
+    "ko": "設定과 使用者 辭典을 貯藏합니다. 學習 記錄은 包含하지 않습니다."
+  },
+  "설정과 사전을 복원했습니다.": {
+    "en": "Settings and dictionary restored.",
+    "ja": "設定と辞書を復元しました。",
+    "zh-Hans": "已恢复设置和词典。",
+    "zh-Hant": "已還原設定與辭典。",
+    "vi": "Đã khôi phục cài đặt và từ điển.",
+    "ko": "設定과 辭典을 復元했습니다."
+  },
+  "숨기기": {
+    "en": "Hide",
+    "ja": "非表示",
+    "zh-Hans": "隐藏",
+    "zh-Hant": "隱藏",
+    "vi": "Ẩn",
+    "ko": "숨기기"
+  },
+  "시스템": {
+    "en": "System",
+    "ja": "システム",
+    "zh-Hans": "跟随系统",
+    "zh-Hant": "跟隨系統",
+    "vi": "Hệ thống",
+    "ko": "시스템"
+  },
+  "앱 설정 동기화는 ‘전체 접근 허용’을 켜세요.": {
+    "en": "Enable Allow Full Access to sync app settings.",
+    "ja": "アプリの設定を同期するには「フルアクセスを許可」をオンにしてください。",
+    "zh-Hans": "开启“允许完全访问”以同步应用设置。",
+    "zh-Hant": "開啟「允許完整取用」以同步 App 設定。",
+    "vi": "Bật Cho phép truy cập đầy đủ để đồng bộ cài đặt ứng dụng.",
+    "ko": "앱 設定 同期化는 ‘전체 접근 허용’을 켜세요."
+  },
+  "어둡게": {
+    "en": "Dark",
+    "ja": "ダーク",
+    "zh-Hans": "深色",
+    "zh-Hant": "深色",
+    "vi": "Tối",
+    "ko": "어둡게"
+  },
+  "언어 추가": {
+    "en": "Add Language",
+    "ja": "言語を追加",
+    "zh-Hans": "添加语言",
+    "zh-Hant": "加入語言",
+    "vi": "Thêm ngôn ngữ",
+    "ko": "言語 追加"
+  },
+  "언어가 없는 항목은 위에서 선택한 언어로 가져옵니다.": {
+    "en": "Entries without a language use the language selected above.",
+    "ja": "言語の指定がない項目は、上で選択した言語で読み込みます。",
+    "zh-Hans": "未指定语言的条目使用上方所选语言。",
+    "zh-Hant": "未指定語言的項目使用上方所選語言。",
+    "vi": "Mục không có ngôn ngữ sẽ dùng ngôn ngữ đã chọn ở trên.",
+    "ko": "言語가 없는 項目은 위에서 選擇한 言語로 가져옵니다."
+  },
+  "오픈소스 라이선스": {
+    "en": "Open Source Licenses",
+    "ja": "オープンソースライセンス",
+    "zh-Hans": "开源许可证",
+    "zh-Hant": "開源授權條款",
+    "vi": "Giấy phép nguồn mở",
+    "ko": "오픈소스 라이선스"
+  },
+  "완료": {
+    "en": "Done",
+    "ja": "完了",
+    "zh-Hans": "完成",
+    "zh-Hant": "完成",
+    "vi": "Xong",
+    "ko": "完了"
+  },
+  "이 후보 학습 지우기": {
+    "en": "Forget This Candidate",
+    "ja": "この候補の学習を削除",
+    "zh-Hans": "忘记此候选词",
+    "zh-Hant": "清除此候選字的學習記錄",
+    "vi": "Quên gợi ý này",
+    "ko": "이 候補 學習 지우기"
+  },
+  "이동": {
+    "en": "Go",
+    "ja": "開く",
+    "zh-Hans": "前往",
+    "zh-Hant": "前往",
+    "vi": "Đi",
+    "ko": "移動"
+  },
+  "이모지": {
+    "en": "Emoji",
+    "ko": "이모지",
+    "ja": "絵文字",
+    "zh-Hans": "表情符号",
+    "zh-Hant": "表情符號",
+    "vi": "Biểu tượng cảm xúc"
+  },
+  "읽기": {
+    "en": "Reading",
+    "ja": "読み",
+    "zh-Hans": "读音",
+    "zh-Hant": "讀音",
+    "vi": "Cách đọc",
+    "ko": "읽기"
+  },
+  "읽기 (히라가나)": {
+    "en": "Reading (Hiragana)",
+    "ja": "読み（ひらがな）",
+    "zh-Hans": "读音（平假名）",
+    "zh-Hant": "讀音（平假名）",
+    "vi": "Cách đọc (hiragana)",
+    "ko": "읽기 (히라가나)"
+  },
+  "입력": {
+    "en": "Typing",
+    "ja": "入力",
+    "zh-Hans": "输入",
+    "zh-Hant": "輸入",
+    "vi": "Nhập liệu",
+    "ko": "入力"
+  },
+  "입력 언어 선택": {
+    "en": "Choose Input Language",
+    "ja": "入力言語を選択",
+    "zh-Hans": "选择输入语言",
+    "zh-Hant": "選擇輸入語言",
+    "vi": "Chọn ngôn ngữ nhập",
+    "ko": "入力 言語 選擇"
+  },
+  "입력 연습": {
+    "en": "Typing Practice",
+    "ja": "入力練習",
+    "zh-Hans": "输入练习",
+    "zh-Hant": "輸入練習",
+    "vi": "Luyện nhập",
+    "ko": "入力 練習"
+  },
+  "입력창에서 지구본을 길게 눌러 FusionIME를 선택하세요.": {
+    "en": "In a text field, hold the globe key and choose FusionIME.",
+    "ja": "入力欄で地球儀キーを長押ししてFusionIMEを選択してください。",
+    "zh-Hans": "在输入框中长按地球键，选择 FusionIME。",
+    "zh-Hant": "在輸入欄中長按地球鍵，選擇 FusionIME。",
+    "vi": "Trong ô nhập, nhấn giữ phím quả địa cầu và chọn FusionIME.",
+    "ko": "入力窓에서 地球本을 길게 눌러 FusionIME를 選擇하세요."
+  },
+  "장음 기호": {
+    "en": "Long Vowel Mark",
+    "ja": "長音符",
+    "zh-Hans": "长音符号",
+    "zh-Hant": "長音符號",
+    "vi": "Dấu nguyên âm dài",
+    "ko": "長音 記號"
+  },
+  "저장된 단어": {
+    "en": "Saved Words",
+    "ja": "登録済みの単語",
+    "zh-Hans": "已保存的词语",
+    "zh-Hant": "已儲存的詞語",
+    "vi": "Từ đã lưu",
+    "ko": "貯藏된 單語"
+  },
+  "전송": {
+    "en": "Send",
+    "ja": "送信",
+    "zh-Hans": "发送",
+    "zh-Hant": "傳送",
+    "vi": "Gửi",
+    "ko": "傳送"
+  },
+  "줄바꿈": {
+    "en": "return",
+    "ja": "改行",
+    "zh-Hans": "换行",
+    "zh-Hant": "換行",
+    "vi": "xuống dòng",
+    "ko": "줄바꿈"
+  },
+  "지원 파일 형식": {
+    "en": "Supported File Formats",
+    "ja": "対応ファイル形式",
+    "zh-Hans": "支持的文件格式",
+    "zh-Hant": "支援的檔案格式",
+    "vi": "Định dạng tệp hỗ trợ",
+    "ko": "支援 파일 形式"
+  },
+  "쯔놈 후보": {
+    "en": "Chữ Nôm Candidates",
+    "ja": "チュノム候補",
+    "zh-Hans": "喃字候选",
+    "zh-Hant": "喃字候選",
+    "vi": "Gợi ý chữ Nôm",
+    "ko": "쯔놈 候補"
+  },
+  "추가": {
+    "en": "Add",
+    "ja": "追加",
+    "zh-Hans": "添加",
+    "zh-Hant": "加入",
+    "vi": "Thêm",
+    "ko": "追加"
+  },
+  "커서 오른쪽": {
+    "en": "Move Cursor Right",
+    "ja": "カーソルを右へ",
+    "zh-Hans": "向右移动光标",
+    "zh-Hant": "向右移動游標",
+    "vi": "Di chuyển con trỏ sang phải",
+    "ko": "커서 오른쪽"
+  },
+  "커서 왼쪽": {
+    "en": "Move Cursor Left",
+    "ja": "カーソルを左へ",
+    "zh-Hans": "向左移动光标",
+    "zh-Hant": "向左移動游標",
+    "vi": "Di chuyển con trỏ sang trái",
+    "ko": "커서 왼쪽"
+  },
+  "켜기": {
+    "en": "On",
+    "ja": "オン",
+    "zh-Hans": "开启",
+    "zh-Hant": "開啟",
+    "vi": "Bật",
+    "ko": "켜기"
+  },
+  "키보드 높이": {
+    "en": "Keyboard Height",
+    "ja": "キーボードの高さ",
+    "zh-Hans": "键盘高度",
+    "zh-Hant": "鍵盤高度",
+    "vi": "Chiều cao bàn phím",
+    "ko": "키보드 높이"
+  },
+  "키보드 닫기": {
+    "en": "Hide Keyboard",
+    "ja": "キーボードを閉じる",
+    "zh-Hans": "收起键盘",
+    "zh-Hant": "收合鍵盤",
+    "vi": "Ẩn bàn phím",
+    "ko": "키보드 닫기"
+  },
+  "키보드 메뉴": {
+    "en": "Keyboard Menu",
+    "ja": "キーボードメニュー",
+    "zh-Hans": "键盘菜单",
+    "zh-Hant": "鍵盤選單",
+    "vi": "Menu bàn phím",
+    "ko": "키보드 메뉴"
+  },
+  "키보드 설정": {
+    "en": "Keyboard Settings",
+    "ja": "キーボード設定",
+    "zh-Hans": "键盘设置",
+    "zh-Hant": "鍵盤設定",
+    "vi": "Cài đặt bàn phím",
+    "ko": "키보드 設定"
+  },
+  "키보드 추가": {
+    "en": "Add Keyboard",
+    "ja": "キーボードを追加",
+    "zh-Hans": "添加键盘",
+    "zh-Hant": "新增鍵盤",
+    "vi": "Thêm bàn phím",
+    "ko": "키보드 追加"
+  },
+  "탭하면 다음 언어로 전환합니다. 누른 채 움직이거나 길게 눌러 메뉴를 열고 원하는 언어에서 손을 떼십시오.": {
+    "en": "Tap for the next language. Drag or hold to open the menu, then release over a language.",
+    "ja": "タップで次の言語に切り替えます。ドラッグまたは長押しでメニューを開き、選ぶ言語の上で指を離してください。",
+    "zh-Hans": "轻点切换到下一种语言。拖动或长按打开菜单，在所需语言上松手。",
+    "zh-Hant": "點一下切換至下一種語言。拖移或長按開啟選單，在所需語言上放開。",
+    "vi": "Chạm để đổi ngôn ngữ. Kéo hoặc nhấn giữ để mở menu, rồi thả trên ngôn ngữ cần chọn.",
+    "ko": "탭하면 다음 言語로 轉換합니다. 누른 채 움직이거나 길게 눌러 메뉴를 열고 願하는 言語에서 손을 떼십시오."
+  },
+  "표시": {
+    "en": "Show",
+    "ja": "表示",
+    "zh-Hans": "显示",
+    "zh-Hant": "顯示",
+    "vi": "Hiện",
+    "ko": "表示"
+  },
+  "한자 변환": {
+    "en": "Hanja Conversion",
+    "ja": "漢字変換",
+    "zh-Hans": "汉字转换",
+    "zh-Hant": "漢字轉換",
+    "vi": "Chuyển đổi Hán tự",
+    "ko": "漢字 轉換"
+  },
+  "한자 변환 방식": {
+    "en": "Hanja Conversion Mode",
+    "ja": "漢字変換方式",
+    "zh-Hans": "汉字转换方式",
+    "zh-Hant": "漢字轉換方式",
+    "vi": "Chế độ chuyển đổi Hán tự",
+    "ko": "漢字 轉換 方式"
+  },
+  "확정 / 줄바꿈": {
+    "en": "Confirm / Return",
+    "ja": "確定／改行",
+    "zh-Hans": "确认／换行",
+    "zh-Hant": "確認／換行",
+    "vi": "Xác nhận / Xuống dòng",
+    "ko": "確定 / 줄바꿈"
+  },
+  "확정한 단어를 기기에 저장해 후보에 반영합니다.": {
+    "en": "Saves confirmed words on this device to improve suggestions.",
+    "ja": "確定した単語を端末に保存して候補に反映します。",
+    "zh-Hans": "将确认的词语保存在本机，用于改进候选词。",
+    "zh-Hant": "將確認的詞語儲存在裝置上，用於改善候選字。",
+    "vi": "Lưu từ đã xác nhận trên thiết bị để cải thiện gợi ý.",
+    "ko": "確定한 單語를 機器에 貯藏해 候補에 反映합니다."
+  },
+  "후보 %@": {
+    "en": "Candidate %@",
+    "ja": "候補 %@",
+    "zh-Hans": "候选 %@",
+    "zh-Hant": "候選 %@",
+    "vi": "Gợi ý %@",
+    "ko": "候補 %@"
+  },
+  "후보 표시": {
+    "en": "Show Suggestions",
+    "ja": "候補を表示",
+    "zh-Hans": "显示候选词",
+    "zh-Hant": "顯示候選字",
+    "vi": "Hiện gợi ý",
+    "ko": "候補 表示"
+  },
+  "후보 행: %d": {
+    "en": "Candidate Rows: %d",
+    "ja": "候補の行数：%d",
+    "zh-Hans": "候选行数：%d",
+    "zh-Hant": "候選列數：%d",
+    "vi": "Số hàng gợi ý: %d",
+    "ko": "候補 行: %d"
+  },
+  "CANGJIE": {
+    "vi": "Thương Hiệt"
+  },
+  "COLEMAK": {
+    "vi": "Colemak"
+  },
+  "DAYI": {
+    "vi": "Đại Dịch"
+  },
+  "DVORAK": {
+    "vi": "Dvorak"
+  },
+  "Deutsch": {
+    "vi": "Tiếng Đức"
+  },
+  "English": {
+    "vi": "Tiếng Anh"
+  },
+  "Español": {
+    "vi": "Tiếng Tây Ban Nha"
+  },
+  "Français": {
+    "vi": "Tiếng Pháp"
+  },
+  "GODAN": {
+    "vi": "GODAN (5 hàng)"
+  },
+  "Italiano": {
+    "vi": "Tiếng Ý"
+  },
+  "Português": {
+    "vi": "Tiếng Bồ Đào Nha (Brazil)"
+  },
+  "ROMAJI": {
+    "vi": "Romaji QWERTY"
+  },
+  "Shift": {
+    "vi": "Shift"
+  },
+  "Shift 문자": {
+    "vi": "Ký tự khi nhấn Shift"
+  },
+  "Tiếng Việt": {
+    "vi": "Tiếng Việt"
+  },
+  "ZHUYIN": {
+    "vi": "Chú âm"
+  },
+  "いろは": {
+    "vi": "Kana Iroha"
+  },
+  "かな 12キー Flick": {
+    "vi": "Kana 12 phím"
+  },
+  "かな JIS": {
+    "vi": "Kana JIS"
+  },
+  "五十音": {
+    "vi": "Kana Gojūon"
+  },
+  "倉頡": {
+    "vi": "Thương Hiệt"
+  },
+  "大易": {
+    "vi": "Đại Dịch"
+  },
+  "拼音": {
+    "vi": "Pinyin (tiếng Trung giản thể)"
+  },
+  "日本語": {
+    "vi": "Mozc (tiếng Nhật)"
+  },
+  "注音": {
+    "vi": "Chú âm (tiếng Trung phồn thể)"
+  },
+  "粵拼": {
+    "vi": "Việt bính (tiếng Quảng Đông)"
+  },
+  "速成": {
+    "vi": "Thương Hiệt nhanh"
+  },
+  "가나 배열 방향": {
+    "vi": "Bố cục âm tiết kana"
+  },
+  "가로": {
+    "vi": "Ngang"
+  },
+  "가로 분할 키보드": {
+    "vi": "Bàn phím tách (ngang)"
+  },
+  "가로 키보드 높이": {
+    "vi": "Chiều cao bàn phím (ngang)"
+  },
+  "공백 두 번으로 마침표": {
+    "zh-Hans": "自动句号",
+    "vi": "Tự động thêm dấu chấm"
+  },
+  "기본": {
+    "vi": "Cơ bản"
+  },
+  "다음": {
+    "zh-Hans": "下一步",
+    "vi": "Tiếp theo"
+  },
+  "단순 · 글자 선택": {
+    "zh-Hans": "简单转换器",
+    "vi": "Bộ chuyển đổi đơn giản"
+  },
+  "단어": {
+    "vi": "Bộ chuyển đổi từ"
+  },
+  "대응 기호": {
+    "vi": "Ký hiệu"
+  },
+  "동국정운": {
+    "vi": "Bộ chuyển đổi Jeongeum"
+  },
+  "두벌식": {
+    "vi": "Hangul 2 bộ tiêu chuẩn"
+  },
+  "문맥 변환": {
+    "zh-Hans": "Chewing 转换器",
+    "vi": "Bộ chuyển đổi Chewing"
+  },
+  "반응": {
+    "vi": "Phản hồi"
+  },
+  "번체자": {
+    "vi": "Tiếng Trung phồn thể"
+  },
+  "분할 키보드": {
+    "vi": "Bàn phím tách"
+  },
+  "세로 · 오른쪽부터": {
+    "vi": "Dọc (phải sang trái)"
+  },
+  "세로 · 왼쪽부터": {
+    "vi": "Dọc (trái sang phải)"
+  },
+  "세로 분할 키보드": {
+    "vi": "Bàn phím tách (dọc)"
+  },
+  "세로 키보드 높이": {
+    "vi": "Chiều cao bàn phím (dọc)"
+  },
+  "세벌식 390": {
+    "vi": "Hangul 3 bộ 390"
+  },
+  "세벌식 최종": {
+    "vi": "Hangul 3 bộ cuối cùng"
+  },
+  "세벌식 최종 엄격 조합": {
+    "vi": "Hangul 3 bộ cuối cùng (nghiêm ngặt)"
+  },
+  "숫자 행": {
+    "vi": "Hàng số"
+  },
+  "아래로 밀기": {
+    "vi": "Thao tác vuốt xuống mặc định"
+  },
+  "앱 정보": {
+    "vi": "Thông tin ứng dụng"
+  },
+  "어절 · 문맥": {
+    "vi": "Bộ chuyển đổi cụm từ"
+  },
+  "언어": {
+    "zh-Hans": "语言",
+    "vi": "Ngôn ngữ"
+  },
+  "없음": {
+    "vi": "Không có thao tác"
+  },
+  "옛한글 두벌식": {
+    "vi": "Hangul cổ 2 bộ"
+  },
+  "옛한글 세벌식 393": {
+    "vi": "Hangul cổ 3 bộ 393"
+  },
+  "외관": {
+    "vi": "Giao diện"
+  },
+  "위로 밀기": {
+    "vi": "Thao tác vuốt lên mặc định"
+  },
+  "유사 발음 문맥 변환": {
+    "zh-Hans": "模糊 Chewing 转换器",
+    "vi": "Bộ chuyển đổi Chewing khớp gần đúng"
+  },
+  "입력 모드": {
+    "vi": "Chế độ nhập"
+  },
+  "입력 방식": {
+    "vi": "Phương thức nhập"
+  },
+  "자동 대문자": {
+    "zh-Hans": "自动大写",
+    "vi": "Tự động viết hoa"
+  },
+  "자모 순서 자동 보정": {
+    "vi": "Sửa thứ tự phụ âm và nguyên âm"
+  },
+  "전각 영문·기호": {
+    "vi": "Ký hiệu toàn chiều rộng"
+  },
+  "정보": {
+    "vi": "Thông tin"
+  },
+  "주음 변환 엔진": {
+    "zh-Hans": "转换引擎",
+    "vi": "Bộ chuyển đổi"
+  },
+  "커서 버튼": {
+    "vi": "Phím di chuyển con trỏ"
+  },
+  "커서 이동 버튼": {
+    "vi": "Phím di chuyển con trỏ"
+  },
+  "키 미리보기": {
+    "vi": "Xem trước phím"
+  },
+  "키 소리": {
+    "vi": "Âm thanh phím"
+  },
+  "키보드 배열": {
+    "vi": "Bố cục bàn phím"
+  },
+  "터치": {
+    "vi": "Cảm ứng"
+  },
+  "테마": {
+    "zh-Hans": "键盘主题",
+    "vi": "Chủ đề bàn phím"
+  },
+  "플릭 문자 안내": {
+    "vi": "Hiện ký tự khi vuốt"
+  },
+  "플릭 이동 거리": {
+    "vi": "Độ nhạy vuốt"
+  },
+  "학습 기록 지우기": {
+    "zh-Hans": "清空输入记录",
+    "vi": "Xóa lịch sử nhập"
+  },
+  "학습 기록을 지웠습니다.": {
+    "zh-Hans": "已清空输入记录。",
+    "vi": "Đã xóa lịch sử nhập."
+  },
+  "한국어": {
+    "vi": "Tiếng Hàn"
+  },
+  "한글 예측": {
+    "zh-Hans": "仅韩文预测器",
+    "vi": "Dự đoán chỉ dùng Hangul"
+  },
+  "햅틱": {
+    "vi": "Rung phím"
+  },
+  "행동": {
+    "vi": "Thao tác"
+  },
+  "화면 모드": {
+    "en": "Screen Mode",
+    "ko": "화면 모드",
+    "ja": "スクリーンモード",
+    "zh-Hans": "画面模式",
+    "zh-Hant": "畫面模式",
+    "vi": "Chế độ màn hình"
+  },
+  "모바일": {
+    "en": "Mobile",
+    "ko": "모바일",
+    "ja": "モバイル",
+    "zh-Hans": "手机",
+    "zh-Hant": "手機",
+    "vi": "Điện thoại"
+  },
+  "태블릿": {
+    "en": "Tablet",
+    "ko": "태블릿",
+    "ja": "タブレット",
+    "zh-Hans": "平板",
+    "zh-Hant": "平板",
+    "vi": "Máy tính bảng"
+  },
+  "기호 배열": {
+    "en": "Symbol Layout",
+    "ko": "기호 배열",
+    "ja": "記号配列",
+    "zh-Hans": "Symbol Layout",
+    "zh-Hant": "符號佈局",
+    "vi": "Bố cục ký hiệu"
+  },
+  "음성 입력 버튼": {
+    "en": "Show Voice Input Button",
+    "ko": "음성 입력 버튼 표시",
+    "ja": "音声入力ボタン表示",
+    "zh-Hans": "显示语音输入按钮",
+    "zh-Hant": "顯示語音輸入按鈕",
+    "vi": "Hiện nút nhập bằng giọng nói"
+  },
+  "클립보드 후보": {
+    "en": "Clipboard suggestion",
+    "ko": "클립보드 후보",
+    "ja": "クリップボード候補",
+    "zh-Hans": "Clipboard suggestion",
+    "zh-Hant": "剪貼簿建議",
+    "vi": "Gợi ý từ bảng nhớ tạm"
+  },
+  "세로 분할 간격": {
+    "en": "Split Ratio (Portrait)",
+    "ko": "좌우분할 간격 비율 (세로 화면)",
+    "ja": "左右分割間隔比（縦画面）",
+    "zh-Hans": "分割比例（纵向画面）",
+    "zh-Hant": "分割比例（縱向畫面）",
+    "vi": "Khoảng cách chia đôi (dọc)"
+  },
+  "가로 분할 간격": {
+    "en": "Split Ratio (Landscape)",
+    "ko": "좌우분할 간격 비율 (가로 화면)",
+    "ja": "左右分割間隔比（横画面）",
+    "zh-Hans": "分割比例（横向画面）",
+    "zh-Hant": "分割比例（橫向畫面）",
+    "vi": "Khoảng cách chia đôi (ngang)"
+  },
+  "진동 지속 시간": {
+    "en": "Vibration Duration",
+    "ko": "진동 지속 시간",
+    "ja": "振動持続時間",
+    "zh-Hans": "振动持续时间",
+    "zh-Hant": "振動持續時間",
+    "vi": "Thời gian rung"
+  },
+  "터치 모드": {
+    "en": "Touch Mode",
+    "ko": "터치 모드",
+    "ja": "タッチモード",
+    "zh-Hans": "触控模式",
+    "zh-Hant": "觸控模式",
+    "vi": "Chế độ chạm"
+  },
+  "터치 교정": {
+    "en": "Touch Correction",
+    "ko": "터치 교정",
+    "ja": "タッチ補正",
+    "zh-Hans": "Touch Correction",
+    "zh-Hant": "觸摸補正",
+    "vi": "Hiệu chỉnh điểm chạm"
+  },
+  "Seek": {
+    "en": "Seek",
+    "ko": "찾아보기",
+    "ja": "キー探索",
+    "zh-Hans": "查找按键",
+    "zh-Hant": "查找按鍵",
+    "vi": "Trượt chọn phím"
+  },
+  "Flick": {
+    "en": "Flick",
+    "ko": "플릭",
+    "ja": "フリック",
+    "zh-Hans": "滑动",
+    "zh-Hant": "滑動",
+    "vi": "Vuốt"
+  },
+  "기본 문자": {
+    "en": "Character",
+    "ko": "문자",
+    "ja": "文字",
+    "zh-Hans": "文字",
+    "zh-Hant": "文字",
+    "vi": "Ký tự"
+  },
+  "Shift 기호": {
+    "en": "Shifted Symbol",
+    "ko": "윗글쇠 기호",
+    "ja": "シフト記号",
+    "zh-Hans": "Shift 符号",
+    "zh-Hant": "變換後符號",
+    "vi": "Ký hiệu với Shift"
+  },
+  "12키 입력 방식": {
+    "en": "12-Key Flick Mode",
+    "ko": "12키 플릭 모드",
+    "ja": "12キーフリックモード",
+    "zh-Hans": "12键滑动模式",
+    "zh-Hant": "12鍵滑動模式",
+    "vi": "Chế độ vuốt 12 phím"
+  },
+  "플릭 및 반복 입력": {
+    "en": "Flick and Toggle",
+    "ko": "플릭 및 토글",
+    "ja": "フリック及びトグル",
+    "zh-Hans": "滑动与连击",
+    "zh-Hant": "滑動與連擊",
+    "vi": "Vuốt và nhấn lặp"
+  },
+  "플릭만": {
+    "en": "Flick Only",
+    "ko": "플릭 전용",
+    "ja": "フリックのみ",
+    "zh-Hans": "仅限滑动",
+    "zh-Hant": "僅限滑動",
+    "vi": "Chỉ vuốt"
+  },
+  "반복 입력만": {
+    "en": "Toggle Only",
+    "ko": "토글 전용",
+    "ja": "トグルのみ",
+    "zh-Hans": "仅限连击",
+    "zh-Hant": "僅限連擊",
+    "vi": "Chỉ nhấn lặp"
+  },
+  "후보 창 높이": {
+    "en": "Candidate View Height",
+    "ko": "후보 창 높이",
+    "ja": "候補ウィンドウの高さ",
+    "zh-Hans": "候选窗口高度",
+    "zh-Hant": "候選窗口高度",
+    "vi": "Chiều cao danh sách gợi ý"
+  },
+  "이 언어의 학습 기록 지우기": {
+    "en": "Clear User Input History",
+    "ko": "입력 기록 비우기",
+    "ja": "入力履歴の初期化",
+    "zh-Hans": "Clear User Input History",
+    "zh-Hant": "清除使用者的輸入歷史",
+    "vi": "Xóa lịch sử học của ngôn ngữ này"
+  },
+  "소스 코드": {
+    "en": "Source Code",
+    "ko": "소스 코드",
+    "ja": "ソースコード",
+    "zh-Hans": "源代码",
+    "zh-Hant": "原始碼",
+    "vi": "Mã nguồn"
+  },
+  "원본 개발자 연락처": {
+    "en": "Contact Maintainer",
+    "ko": "개발자에게 연락하기",
+    "ja": "開発者に連絡",
+    "zh-Hans": "联络开发者",
+    "zh-Hant": "聯絡開發者",
+    "vi": "Liên hệ nhà phát triển gốc"
+  },
+  "사용한 프로젝트": {
+    "en": "Used Projects",
+    "ko": "사용된 프로젝트",
+    "ja": "使用したプロジェクト",
+    "zh-Hans": "使用的开源专案",
+    "zh-Hant": "使用的開源專案",
+    "vi": "Các dự án được sử dụng"
+  },
+  "symbol_G": {
+    "en": "Gboard Type",
+    "ko": "Gboard 배열",
+    "ja": "Gboard式配列",
+    "zh-Hans": "Gboard Type",
+    "zh-Hant": "Gboard 式佈局",
+    "vi": "Kiểu Gboard"
+  },
+  "symbol_N1": {
+    "en": "Naver Type 1",
+    "ko": "네이버 배열",
+    "ja": "Naver式配列",
+    "zh-Hans": "Naver Type 1",
+    "zh-Hant": "Naver 式佈局",
+    "vi": "Kiểu Naver 1"
+  },
+  "symbol_N2": {
+    "en": "Naver Type 2",
+    "ko": "네이버 배열 (고급)",
+    "ja": "Naver式配列（高級）",
+    "zh-Hans": "Naver Type 2",
+    "zh-Hant": "Naver 式佈局(進階)",
+    "vi": "Kiểu Naver 2"
+  },
+  "symbol_O1": {
+    "en": "OpenWnn Korean Type 1",
+    "ko": "OpenWnn Korean 배열",
+    "ja": "OpenWnn Korean式配列",
+    "zh-Hans": "OpenWnn Korean Type 1",
+    "zh-Hant": "OpenWnn Korean 佈局",
+    "vi": "Kiểu OpenWnn Hàn Quốc 1"
+  },
+  "symbol_O2": {
+    "en": "OpenWnn Korean Type 2",
+    "ko": "OpenWnn Korean 배열 (고급)",
+    "ja": "OpenWnn Korean式配列（高級）",
+    "zh-Hans": "OpenWnn Korean Type 2",
+    "zh-Hant": "OpenWnn Korean 佈局(進階)",
+    "vi": "Kiểu OpenWnn Hàn Quốc 2"
+  },
+  "클립보드 지우기": {
+    "en": "Clear clipboard",
+    "ko": "클립보드 削除",
+    "ja": "クリップボードを消去",
+    "zh-Hans": "清空剪贴板",
+    "zh-Hant": "清除剪貼簿",
+    "vi": "Xóa bảng nhớ tạm"
+  },
+  "숫자 키보드": {
+    "en": "Number keypad",
+    "ko": "數字 키보드",
+    "ja": "数字キーボード",
+    "zh-Hans": "数字键盘",
+    "zh-Hant": "數字鍵盤",
+    "vi": "Bàn phím số"
+  },
+  "자동 수정": {
+    "en": "Auto-correction",
+    "ko": "자동 수정",
+    "ja": "自動修正",
+    "zh-Hans": "自动改正",
+    "zh-Hant": "自動修正",
+    "vi": "Tự động sửa"
+  }
+}

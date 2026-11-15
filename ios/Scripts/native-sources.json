@@ -1,0 +1,14 @@
+{
+  "mozc": {
+    "version": "a4541df29db443b49f81cf54665873b68fde9efa",
+    "url": "https://codeload.github.com/google/mozc/tar.gz/a4541df29db443b49f81cf54665873b68fde9efa",
+    "archive": "mozc.tar.gz",
+    "sha256": "0139454255c6473594d950166c1f742d6262bf4c683c48ab52a4f1e23a273a17"
+  },
+  "libchewing-0.12.0": {
+    "version": "0.12.0",
+    "url": "https://github.com/chewing/libchewing/releases/download/v0.12.0/libchewing-0.12.0.tar.zst",
+    "archive": "libchewing-0.12.0.tar.zst",
+    "sha256": "6a7fae4aaa6e6ce2bd9f70f0016c553585ed5aca1e086476749a03ac5c3f4cb0"
+  }
+}
