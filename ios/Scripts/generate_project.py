@@ -19,6 +19,7 @@ refs['Resources/PrivacyInfo.xcprivacy']=ref('Resources/PrivacyInfo.xcprivacy','t
 refs['Resources/Localizable.xcstrings']=ref('Resources/Localizable.xcstrings','text.json.xcstrings')
 refs['Resources/lexicon.sqlite']=ref('Resources/lexicon.sqlite','file')
 refs['Resources/Native']=ref('Resources/Native','folder')
+refs['Resources/Fonts']=ref('Resources/Fonts','folder')
 for path in ['App/Info.plist','Keyboard/Info.plist','Config/FusionIME.entitlements','Config/Shared.xcconfig']:
     refs[path]=ref(path,'text.xcconfig' if path.endswith('xcconfig') else 'text.plist.xml')
 package=add('package','XCLocalSwiftPackageReference',relativePath='FusionCore')
@@ -45,7 +46,7 @@ for key,name,files,product,kind in [('app','FusionIME',app,appProduct,'com.apple
     sources=add(key+'sources','PBXSourcesBuildPhase',buildActionMask=2147483647,files=[add(key+p,'PBXBuildFile',fileRef=refs[p]) for p in files],runOnlyForDeploymentPostprocessing=0)
     dependency=add(key+'core','XCSwiftPackageProductDependency',package=package,productName='FusionCore')
     frameworks=add(key+'frameworks','PBXFrameworksBuildPhase',buildActionMask=2147483647,files=[add(key+'core-build','PBXBuildFile',productRef=dependency)],runOnlyForDeploymentPostprocessing=0)
-    resources=['Resources/PrivacyInfo.xcprivacy','Resources/Localizable.xcstrings']+(['App/Assets.xcassets','Resources/Licenses'] if key=='app' else ['Resources/lexicon.sqlite','Resources/Native'])
+    resources=['Resources/PrivacyInfo.xcprivacy','Resources/Localizable.xcstrings','Resources/Fonts']+(['App/Assets.xcassets','Resources/Licenses'] if key=='app' else ['Resources/lexicon.sqlite','Resources/Native'])
     resourcePhase=add(key+'resources','PBXResourcesBuildPhase',buildActionMask=2147483647,files=[add(key+'resource'+p,'PBXBuildFile',fileRef=refs[p]) for p in resources],runOnlyForDeploymentPostprocessing=0)
     phases=[sources,frameworks,resourcePhase];dependencies=[]
     if key=='app':

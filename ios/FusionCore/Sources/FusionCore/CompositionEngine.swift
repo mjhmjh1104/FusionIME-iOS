@@ -67,6 +67,7 @@ public final class CompositionEngine {
         hasMoreCandidates=native?.hasMoreCandidates ?? false
         candidates.insert(contentsOf:userCandidates(composition),at:0)
         if !composition.isEmpty { candidates.insert(Candidate(composition),at:0) }
+        candidates=Candidate.unique(candidates)
         return frame.committed
     }
     private func userCandidates(_ reading:String) -> [Candidate] {
@@ -77,7 +78,7 @@ public final class CompositionEngine {
     public func predictNext(after context:String) {
         guard raw.isEmpty else { return }
         previousWord=mode.language.isLatin ? context:context.split(whereSeparator:{$0.isWhitespace}).last.map(String.init) ?? ""
-        candidates=native?.predict(after:context) ?? predictor?.suggest("",previous:previousWord) ?? []
+        candidates=Candidate.unique(native?.predict(after:context) ?? predictor?.suggest("",previous:previousWord) ?? [])
     }
     /// Native Space converts a segment or completes a tone; nil means ordinary space.
     public func convertSpace() -> String? {
@@ -152,9 +153,13 @@ public final class CompositionEngine {
         guard !text.isEmpty else { return false }
         if mode.language == .vietnamese { return !text.contains(where:{$0.isNewline}) }
         if mode.language.isLatin { return text.allSatisfy{LatinInputRules.word($0) || $0.isNumber} }
-        if mode.language == .japanese && (mode.layout == .godan || ["ー","゛","゜","小","*"].contains(text)) { return true }
+        if mode.language == .japanese {
+            // Let Mozc offer number, circled-number and punctuation conversions
+            // while keeping mixed kana/number input in the same composition.
+            return mode.layout == .godan || text.allSatisfy { $0.isLetter || $0.isNumber || "ー゛゜小*'.,!?-、。！？".contains($0) }
+        }
         if mode.language == .zhuyin { return text.unicodeScalars.allSatisfy { (0x3105...0x312f).contains($0.value) || "ˉˊˇˋ˙".unicodeScalars.contains($0) } }
-        if mode.language == .korean { return text.unicodeScalars.allSatisfy { (0x1100...0x11ff).contains($0.value) || (0x3131...0x318e).contains($0.value) || (0xa960...0xa97f).contains($0.value) || (0xd7b0...0xd7ff).contains($0.value) || (0x302e...0x302f).contains($0.value) || $0.value == 0xf1169 || $0.value == 0xf116e } }
+        if mode.language == .korean { return text.unicodeScalars.allSatisfy { (0x1100...0x11ff).contains($0.value) || (0x3131...0x318e).contains($0.value) || (0xa960...0xa97f).contains($0.value) || (0xac00...0xd7a3).contains($0.value) || (0xd7b0...0xd7ff).contains($0.value) || (0x302e...0x302f).contains($0.value) || $0.value == 0xf1169 || $0.value == 0xf116e || (mode.hanja && mode.koreanConverter != "hangul" && KoreanConversion.acceptsLiteral(String($0))) } }
         if mode.language == .dayi { return text.allSatisfy { $0.isLetter || $0.isNumber || "`-=[]\\',./;".contains($0) } }
         if mode.language == .pinyin && text==";" { return mode.doublePinyin.usesSemicolon && raw.split(separator:"'").last.map{$0.count%2 == 1} == true }
         if mode.layout == .vni { return text.allSatisfy{$0.isLetter || $0.isNumber} }
@@ -219,16 +224,16 @@ public final class CompositionEngine {
         if mode.language == .jyutping,let lexicon {
             let input=textBeforeCompositionCursor
             if cantoneseCache?.input != input { cantoneseCache=(input,CantoneseEngine(lexicon:lexicon).candidates(input)) }
-            let hits=cantoneseCache!.candidates
+            let hits=Candidate.unique([Candidate(composition)]+cantoneseCache!.candidates)
             hasMoreCandidates=hits.count>candidateLimit
-            candidates=[Candidate(composition)]+Array(hits.prefix(candidateLimit));return
+            candidates=Array(hits.prefix(candidateLimit));return
         }
         if mode.language == .korean,mode.hanja,["word","phrase"].contains(mode.koreanConverter),let lexicon {
             let input=textBeforeCompositionCursor,phrase=mode.koreanConverter=="phrase"
             if hanjaCache?.input != input || hanjaCache?.phrase != phrase { hanjaCache=(input,phrase,lexicon.hanjaCandidates(input,phrase:phrase)) }
-            let hits=hanjaCache!.candidates
+            let hits=Candidate.unique([Candidate(composition)]+hanjaCache!.candidates)
             hasMoreCandidates=hits.count>candidateLimit
-            candidates=[Candidate(composition)]+Array(hits.prefix(candidateLimit));return
+            candidates=Array(hits.prefix(candidateLimit));return
         }
         var hits:[Candidate]=[]
         let dictionaryMode:String
@@ -237,6 +242,7 @@ public final class CompositionEngine {
         case .korean:
             dictionaryMode="korean"
             if mode.hanja {
+                if mode.koreanConverter != "hangul" { hits += KoreanConversion.candidates(reading) }
                 if mode.koreanConverter=="jeongun" { hits += prefixCandidates(reading,mode:"jeongun") }
                 else if mode.koreanConverter != "hangul" {
                     hits += prefixCandidates(reading,mode:"hanja")
@@ -265,7 +271,7 @@ public final class CompositionEngine {
         // The literal is always available, including for unknown names and incomplete syllables.
         hits.insert(contentsOf:userCandidates(reading).map{$0.consuming(reading.utf16.count)},at:0)
         hits.insert(Candidate(composition,reading:reading),at:0)
-        var seen=Set<String>(); let all=hits.filter{!$0.text.isEmpty && seen.insert($0.text).inserted}
+        let all=Candidate.unique(hits)
         hasMoreCandidates=all.count>candidateLimit;candidates=Array(all.prefix(candidateLimit))
     }
     private func prefixCandidates(_ reading:String,mode:String) -> [Candidate] {
@@ -282,7 +288,7 @@ public final class CompositionEngine {
             do { vietnameseDictionary=try VietnameseDictionary(name:name) }
             catch { dictionaryError=String(describing:error) }
         }
-        candidates=vietnameseDictionary?.candidates(beforeCursor:textBeforeCompositionCursor) ?? []
+        candidates=Candidate.unique(vietnameseDictionary?.candidates(beforeCursor:textBeforeCompositionCursor) ?? [])
     }
     public func learn(_ text:String,previous:String,autoCapitalized:Bool=false,count:Int=1) {
         guard mode.language.isLatin,nativeConfiguration?.learning==true else { return }

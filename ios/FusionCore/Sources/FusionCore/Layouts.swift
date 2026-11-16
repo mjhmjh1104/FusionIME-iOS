@@ -112,11 +112,11 @@ public enum LayoutCatalog {
                         let tagged=String(UnicodeScalar(0xf0000 | (values[0] & 0xffff))!)
                         return KeySpec(output,values:[tagged],id:"\(rowIndex)-\(index)",code:code)
                     }
-                    return KeySpec(output,id:"\(rowIndex)-\(index)",code:code)
+                    return KeySpec(output,values:[output]+symbolAlternatives(output),id:"\(rowIndex)-\(index)",code:code)
                 }
                 let shiftedSymbols:[Character:String] = ["1":"!","2":"@","3":"#","4":"$","5":"%","6":"^","7":"&","8":"*","9":"(","0":")","-":"_","=":"+","[":"{","]":"}",";":":","'":"\"",",":"<",".":">","/":"?","`":"~","\\":"|"]
                 let output=shifted ? shiftedSymbols[char] ?? (char == "ß" ? "ẞ":String(char).uppercased()):String(char)
-                let alternatives=accentAlternatives(char,shifted:shifted)
+                let alternatives=accentAlternatives(char,shifted:shifted)+symbolAlternatives(output)
                 return KeySpec(output,values:[output]+alternatives,id:"\(rowIndex)-\(index)",code:code)
             }
         }
@@ -144,8 +144,9 @@ public enum LayoutCatalog {
         return scalar(values[min(shifted ? 1:0,values.count-1)])
     }
     public static var numbers:[[KeySpec]] {
-        ["+-123=","*/456#","()789$",",0.%"].enumerated().map { row,text in text.enumerated().map { column,char in KeySpec(String(char),id:"number-\(row)-\(column)") } }
+        ["+-123=","*/456#","()789$",",0.%"].enumerated().map { row,text in text.enumerated().map { column,char in KeySpec(String(char),values:[String(char)]+symbolAlternatives(String(char)),id:"number-\(row)-\(column)") } }
     }
+    static func symbolAlternatives(_ value:String)->[String] { LayoutExtras.shared.symbol[value] ?? [] }
     public static var emoji:[String] { EmojiCatalog.groups.flatMap(\.items).compactMap(\.first) }
     static func accentAlternatives(_ c:Character,shifted:Bool) -> [String] {
         let added:[Character:[String]]=["a":["ă","ą"],"o":["ơ"],"u":["ư"],"d":["đ"],"y":["ý"]]

@@ -68,7 +68,7 @@ struct AboutView:View {
                 NavigationLink("백업과 복원") { BackupSettingsView(store:store) }
             }
             Section("오픈소스 라이선스") {
-                ForEach([("FusionIME","FusionIME-GPL-3.0"),("Mozc","Mozc"),("Mozc 사전","Mozc-dictionary"),("Chewing","Chewing-LGPL-2.1"),("PinyinIME","AOSP-Pinyin"),("LatinIME","AOSP-LatinIME"),("AndroidX EmojiPicker","AndroidX-EmojiPicker"),("기타 고지","NOTICE")],id:\.1) { title,name in
+                ForEach([("FusionIME","FusionIME-GPL-3.0"),("Mozc","Mozc"),("Mozc 사전","Mozc-dictionary"),("Chewing","Chewing-LGPL-2.1"),("PinyinIME","AOSP-Pinyin"),("LatinIME","AOSP-LatinIME"),("AndroidX EmojiPicker","AndroidX-EmojiPicker"),("Noto CJK","Noto-CJK-OFL"),("기타 고지","NOTICE")],id:\.1) { title,name in
                     NavigationLink(L10n.text(title)) { LicenseView(name:name) }
                 }
             }

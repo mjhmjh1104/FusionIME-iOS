@@ -230,5 +230,36 @@ final class NativeEngineTests:XCTestCase {
         XCTAssertFalse(e.composition.isEmpty)
         XCTAssertTrue(e.composition.contains("を"))
     }
+    func testMozcNumberAndPunctuationCandidates() throws {
+        for (input,expected) in [("1","一"),("1","①"),("21","㉑"),("50","㊿"),(".","…"),("dai1jou","第1条")] {
+            let e=engine(.japanese);XCTAssertTrue(e.accepts(input));e.append(input)
+            while e.hasMoreCandidates { e.loadMoreCandidates() }
+            if !e.candidates.contains(where:{$0.text==expected}) {
+                _=e.convertSpace()
+                while e.hasMoreCandidates { e.loadMoreCandidates() }
+            }
+            let c=try XCTUnwrap(e.candidates.first{$0.text==expected},"\(input): \(e.candidates.prefix(20).map(\.text))")
+            XCTAssertEqual(e.commit(candidate:c),expected)
+            XCTAssertTrue(e.composition.isEmpty)
+        }
+    }
+    func testMozcLongPressLiteralsAndDuplicateCandidates() throws {
+        for text in ["é","É","½","⅔","¹"] {
+            let e=engine(.japanese)
+            XCTAssertTrue(e.accepts(text))
+            let committed=e.append(text) ?? ""
+            XCTAssertEqual(committed+e.commit(),text)
+        }
+        let e=engine(.japanese);e.append("nihongowobenkyou")
+        func check() {
+            XCTAssertEqual(e.candidates.filter{$0.text==e.composition}.count,1)
+            // Compatibility/old-style Han glyphs remain distinct candidates.
+            XCTAssertEqual(Set(e.candidates.map{Data($0.text.utf8)}).count,e.candidates.count)
+        }
+        check()
+        while e.hasMoreCandidates { e.loadMoreCandidates();check() }
+        _=e.commit(candidate:try XCTUnwrap(e.candidates.first{$0.text=="日本語"}));check()
+        _=e.convertSpace();check()
+    }
     #endif
 }

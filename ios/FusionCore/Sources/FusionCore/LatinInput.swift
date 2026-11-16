@@ -96,6 +96,7 @@ enum LatinLayouts {
         let codePoint=codes.isEmpty ? 0:codes[min(capsLocked ? 2:(shifted ? 1:0),codes.count-1)]
         let value=LatinKeyValue.encoded(codePoint),label=LatinKeyValue.display(value)
         var alternatives=label.first.map { LayoutCatalog.accentAlternatives(Character(String($0).lowercased()),shifted:shifted) } ?? []
+        alternatives += LayoutCatalog.symbolAlternatives(label)
         alternatives += (alternate ?? []).map(LatinKeyValue.encoded)
         var seen=Set([value]);alternatives=alternatives.filter{seen.insert($0).inserted}
         return KeySpec(label,values:[value]+alternatives,code:mapped)

@@ -12,6 +12,34 @@ struct KeyFramesPreference:PreferenceKey {
     private var heldShiftTouches=Set<String>()
     private let correction=TouchCorrection()
     @Published private(set) var active:[String:String]=[:]
+    struct Alternatives {
+        let start:String,values:[String],frame:CGRect,anchor:CGRect
+        var selected:Int?
+        var cellWidth:CGFloat { frame.width/CGFloat(values.count) }
+    }
+    var width:CGFloat=390
+    @Published private(set) var alternatives:Alternatives?
+    func showAlternatives(start:String,key:KeySpec) {
+        guard key.values.count>1,let anchor=frames[key.id] ?? frames[start] else { return }
+        let available=max(1,width-8),popupWidth=min(available,CGFloat(key.values.count)*40)
+        let x=max(4,min(width-4-popupWidth,anchor.midX-popupWidth/2))
+        let cellWidth=popupWidth/CGFloat(key.values.count)
+        let base=max(0,min(key.values.count-1,Int((anchor.midX-x)/cellWidth)))
+        var values=Array(key.values.dropFirst());values.insert(key.values[0],at:base)
+        alternatives=Alternatives(start:start,values:values,frame:CGRect(x:x,y:max(2,anchor.minY-54),width:popupWidth,height:50),anchor:anchor,selected:base)
+        active[start]=key.id
+    }
+    func trackAlternatives(start:String,point:CGPoint) {
+        guard var popup=alternatives,popup.start==start else { return }
+        let bounds=CGRect(x:popup.frame.minX-16,y:popup.frame.minY-30,width:popup.frame.width+32,height:popup.anchor.maxY-popup.frame.minY+60)
+        popup.selected=bounds.contains(point) ? max(0,min(popup.values.count-1,Int((point.x-popup.frame.minX)/popup.cellWidth))):nil
+        alternatives=popup
+    }
+    func selectedAlternative(start:String,point:CGPoint)->String? {
+        trackAlternatives(start:start,point:point)
+        guard let popup=alternatives,popup.start==start,let index=popup.selected else { return nil }
+        return popup.values[index]
+    }
     func updateKeys(_ rows:[[KeySpec]]) {
         keys=Dictionary(rows.flatMap{$0}.filter{!$0.isSpacer}.map{($0.id,$0)},uniquingKeysWith:{$1})
     }
@@ -37,6 +65,9 @@ struct KeyFramesPreference:PreferenceKey {
         return id.flatMap { keys[$0] }
     }
     func highlight(start:String,key:KeySpec?) { active[start]=key?.id }
-    func end(_ start:String) { active.removeValue(forKey:start);pressedKeys.removeValue(forKey:start);heldShiftTouches.remove(start) }
-    func reset() { active=[:] }
+    func end(_ start:String) {
+        active.removeValue(forKey:start);pressedKeys.removeValue(forKey:start);heldShiftTouches.remove(start)
+        if alternatives?.start==start { alternatives=nil }
+    }
+    func reset() { active=[:];alternatives=nil }
 }

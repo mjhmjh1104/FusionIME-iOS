@@ -40,6 +40,10 @@ import AudioToolbox
     var automaticSpaces=true
     var nextKeyboard:(()->Void)?
     var prepareInput:(()->Bool)?
+    // Keep a partially converted prefix in the same host marked range.
+    // Restarting marked text immediately after unmarking is not reliable across
+    // the extension's asynchronous document proxy.
+    private var convertedPrefix=""
     private var lastSpace:Date?
     private var lastShift:Date?
     private var heldShiftUsed=false
@@ -74,6 +78,8 @@ import AudioToolbox
     }
     var tabletLayout:Bool { store.settings.screenMode == .tablet || (store.settings.screenMode == .automatic && layoutWidth>=600) }
     var isNumberPad:Bool { numericField || numberPad }
+    private var koreanConversion:Bool { mode.language == .korean && mode.hanja && mode.koreanConverter != "hangul" && !numericField }
+    private var convertsSymbols:Bool { koreanConversion || (mode.language == .japanese && !numericField) }
     var isShifted:Bool { shifted || shiftHeld }
     var rows:[[KeySpec]] {
         if isNumberPad { return LayoutCatalog.numbers }
@@ -125,7 +131,8 @@ import AudioToolbox
         if !priorMarkedPrefix.isEmpty && context.hasSuffix(priorMarkedPrefix) { context=String(context.dropLast(priorMarkedPrefix.count)) }
         engine.previousWord=mode.language.isLatin ? context:context.split(whereSeparator:{$0.isWhitespace}).last.map(String.init) ?? ""
         let shiftedRoots=(isShifted || manualShift) && [.cangjie,.quick,.dayi].contains(mode.language)
-        if (!symbols || mode.language == .vietnamese || (mode.language == .pinyin && value == "'")) && !isNumberPad && !shiftedRoots && engine.accepts(value) {
+        let compositionLayout=convertsSymbols || ((!symbols || mode.language == .vietnamese || (mode.language == .pinyin && value == "'")) && !isNumberPad)
+        if compositionLayout && !shiftedRoots && engine.accepts(value) {
             var input=value
             let groups=["あ":"あいうえお","か":"かきくけこ","さ":"さしすせそ","た":"たちつてと","な":"なにぬねの","は":"はひふへほ","ま":"まみむめも","や":"やゆよ","ら":"らりるれろ","わ":"わをんー"]
             if mode.layout == .kana12 && mode.kanaTapCycle, let group=groups[value] {
@@ -137,9 +144,7 @@ import AudioToolbox
                 } else { kanaTap=(value,0,Date()) }
             } else { kanaTap=nil }
             let previous=engine.append(input)
-            if let previous { mark?(previous); unmark?() }
-            if !engine.composition.isEmpty { markComposition() }
-            else if previous == nil { mark?(""); unmark?() }
+            updateMarkedComposition(committing:previous ?? "")
             sync()
         } else { commitWithCorrection(suffix:output(value)) }
         if shifted && !capsLocked { shifted=false }
@@ -169,8 +174,7 @@ import AudioToolbox
         lastCorrection=nil
         if pendingEmoji != nil { pendingEmoji=nil;mark?("");unmark?();sync();return }
         if engine.backspace() {
-            markComposition()
-            if engine.composition.isEmpty { unmark?() }
+            updateMarkedComposition()
             sync()
         } else {
             let context=before?() ?? "",hadSelection = !(selected?() ?? "").isEmpty
@@ -257,7 +261,7 @@ import AudioToolbox
             text(alternate?.values[0] ?? key.values[0].uppercased(),holdingShift:holdingShift)
         case .symbol,.shiftedSymbol:
             if let code=key.code,let value=LayoutCatalog.symbol(code:code,shifted:action == .shiftedSymbol || shifted,layout:store.settings.symbolLayout) {
-                if mode.language == .vietnamese || mode.language.isLatin { text(value,holdingShift:holdingShift) } else { commit(suffix:output(value)) }
+                if convertsSymbols || mode.language == .vietnamese || mode.language.isLatin { text(value,holdingShift:holdingShift) } else { commit(suffix:output(value)) }
             }
             else { text(key.values[0],holdingShift:holdingShift) }
         case .space:space()
@@ -292,8 +296,7 @@ import AudioToolbox
         }
         let result=engine.commit(candidate:candidate)+deadKeys.pending
         deadKeys.reset()
-        if !result.isEmpty || !suffix.isEmpty { mark?(output(result)+suffix); unmark?() }
-        if !engine.composition.isEmpty { markComposition() }
+        updateMarkedComposition(committing:output(result)+suffix)
         learn(result)
         sync(predictions:predictAfter)
     }
@@ -304,12 +307,20 @@ import AudioToolbox
         if let candidate { lastCorrection=(typed,candidate.text+suffix,suffix) }
     }
     private func applyNativeCommit(_ result:String) {
-        if !result.isEmpty { mark?(result); unmark?(); store.learn(result,language:mode.language) }
-        if !engine.composition.isEmpty { markComposition() }
-        else if result.isEmpty { mark?(""); unmark?() }
+        updateMarkedComposition(committing:result)
+        if !result.isEmpty { store.learn(result,language:mode.language) }
         sync()
     }
+    private func updateMarkedComposition(committing text:String="") {
+        // Candidate selection, Space and typing during Mozc conversion can all
+        // return a committed prefix alongside a new preedit. Publish them in one
+        // replacement until the entire composition ends, regardless of language.
+        convertedPrefix+=text
+        if !engine.composition.isEmpty { markComposition() }
+        else { mark?(convertedPrefix);unmark?();convertedPrefix="" }
+    }
     func suspend() {
+        convertedPrefix=""
         endShift(cancelled:true)
         // The controller finalizes any connected marked range before suspending.
         // Do not submit candidates or run next-word prediction while switching keyboards.
@@ -322,6 +333,7 @@ import AudioToolbox
         if engine.raw.isEmpty { engine.releaseNativeResources(); candidates=[]; candidatesExpanded=false }
     }
     func cancelForExternalChange() {
+        convertedPrefix=""
         endShift(cancelled:true)
         candidatesExpanded=false
         lastCorrection=nil;engine.isResumedWord=false;doubleSpacePeriodInserted=false;latinSpace = .none;deadKeys.reset();reconversion=nil
@@ -329,8 +341,8 @@ import AudioToolbox
     }
     private func markComposition() {
         let source=engine.composition,offset=engine.compositionCursorUTF16
-        let text=String(decoding:source.utf16.prefix(offset),as:UTF16.self)+deadKeys.pending+String(decoding:source.utf16.dropFirst(offset),as:UTF16.self)
-        if let markAt { markAt(text,engine.compositionCursorUTF16+deadKeys.pending.utf16.count) }
+        let text=convertedPrefix+String(decoding:source.utf16.prefix(offset),as:UTF16.self)+deadKeys.pending+String(decoding:source.utf16.dropFirst(offset),as:UTF16.self)
+        if let markAt { markAt(text,convertedPrefix.utf16.count+engine.compositionCursorUTF16+deadKeys.pending.utf16.count) }
         else { mark?(text) }
     }
     func cursor(_ offset:Int) {
@@ -341,9 +353,9 @@ import AudioToolbox
         if engine.moveCompositionCursor(offset) { markComposition();sync();return }
         commit(); move?(offset); updateCapitalization()
     }
-    func toggleSymbols() { endShift(cancelled:true);if mode.language != .vietnamese { commit() }; symbols.toggle(); emoji=false;numberPad=false }
+    func toggleSymbols() { endShift(cancelled:true);if mode.language != .vietnamese && !convertsSymbols { commit() }; symbols.toggle(); emoji=false;numberPad=false }
     func toggleEmoji() { endShift(cancelled:true);commit(); emoji.toggle(); symbols=false;numberPad=false }
-    func toggleNumbers() { endShift(cancelled:true);commit(); numberPad.toggle(); symbols=false;emoji=false }
+    func toggleNumbers() { endShift(cancelled:true);if !convertsSymbols { commit() }; numberPad.toggle(); symbols=false;emoji=false }
     func chooseEmoji(_ text:String) {
         commit(predictAfter:false);pendingEmoji=text;mark?(text);composition=text
         candidates=EmojiCatalog.variants(of:text).map { Candidate($0) }

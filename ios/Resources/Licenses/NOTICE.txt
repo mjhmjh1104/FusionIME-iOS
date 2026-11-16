@@ -27,3 +27,10 @@ The iOS app does not include Android .so/JNI binaries. Native C/C++ engines are 
 The Swift input engines,
 SQLite importer, and app/extension glue are distributed with this source tree.
 Foundation, UIKit, SwiftUI, UITextChecker and SQLite are system dependencies.
+
+Fusion Candidate Fallback is a renamed subset of Noto Sans CJK KR Regular 2.004.
+Copyright 2014-2021 Adobe (http://www.adobe.com/).
+Source: https://github.com/notofonts/noto-cjk/tree/Sans2.004
+Only the 60 supplementary ideographs used by the Korean and Mozc dictionaries are included.
+It is licensed under the SIL Open Font License 1.1; see Noto-CJK-OFL.txt.
+Reproduction: Scripts/subset_candidate_font.py (original font SHA-256 pinned).

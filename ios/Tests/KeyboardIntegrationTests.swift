@@ -3,6 +3,7 @@ import FusionCore
 import Combine
 import UIKit
 import SwiftUI
+import CoreText
 
 @MainActor final class KeyboardIntegrationTests:XCTestCase {
     func testAppAndKeyboardIncludeMatchingLocalizations() throws {
@@ -102,6 +103,13 @@ import SwiftUI
         func adjustTextPosition(byCharacterOffset offset:Int) {
             guard let selection=field.selectedTextRange,let position=field.position(from:selection.end,offset:offset) else { return }
             field.selectedTextRange=field.textRange(from:position,to:position)
+        }
+        func attach(_ model:KeyboardModel) {
+            model.mark={KeyboardDocumentEditor.setMarkedText($0,in:self,starting:self.field.markedTextRange == nil)}
+            model.markAt={KeyboardDocumentEditor.setMarkedText($0,in:self,starting:self.field.markedTextRange == nil,selectedOffset:$1)}
+            model.unmark={self.unmarkText()};model.insert={self.insertText($0)};model.erase={self.deleteBackward()}
+            model.before={self.documentContextBeforeInput};model.after={self.documentContextAfterInput}
+            model.selected={self.selectedText};model.move={self.adjustTextPosition(byCharacterOffset:$0)}
         }
     }
     func model(_ language:InputLanguage) throws -> KeyboardModel {
@@ -646,6 +654,81 @@ import SwiftUI
         m.cursor(-1);m.text("ㄱㅏ");XCTAssertEqual(d.view.text,"韓國가언")
         m.backspace();XCTAssertEqual(d.view.text,"韓國ㄱ언")
     }
+    func testPartialHanjaAcrossTextAndAddressFields() throws {
+        for converter in ["word","phrase"] {
+            for type in [UIKeyboardType.default,.URL,.webSearch] {
+                let m=try model(.korean),d=AddressDocument();d.keyboardType=type
+                m.store.settings.modes[0].koreanConverter=converter;m.changedSettings()
+                d.attach(m)
+                m.text("ㅂㅏㄴㅇㅣㅂㄱㅡㅁㅈㅣ")
+                while m.engine.hasMoreCandidates { m.loadMoreCandidates(after:try XCTUnwrap(m.candidates.last)) }
+                m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="搬入"}))
+                XCTAssertEqual(d.field.text,"搬入금지");XCTAssertEqual(m.composition,"금지")
+                m.text("ㄴ");XCTAssertEqual(d.field.text,"搬入금진")
+                m.backspace();XCTAssertEqual(d.field.text,"搬入금지")
+                m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="禁止"}))
+                XCTAssertEqual(d.field.text,"搬入禁止");XCTAssertNil(d.field.markedTextRange)
+            }
+        }
+        let m=try model(.korean),d=TextViewDocument();d.attach(m)
+        m.text("ㅂㅏㄴㅇㅣㅂㄱㅡㅁㅈㅣ")
+        while m.engine.hasMoreCandidates { m.loadMoreCandidates(after:try XCTUnwrap(m.candidates.last)) }
+        m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="搬入"}))
+        while !m.composition.isEmpty { m.backspace() }
+        XCTAssertEqual(d.view.text,"搬入");XCTAssertNil(d.view.markedTextRange)
+        m.text("ㄱㅏ");m.commit();XCTAssertEqual(d.view.text,"搬入가")
+    }
+    func testKoreanMixedNumbersSurviveLayoutChanges() throws {
+        let m=try model(.korean),d=TextViewDocument();d.attach(m)
+        m.text("ㅈㅔ");m.toggleSymbols();m.text("1");m.toggleSymbols();m.text("ㅈㅗ")
+        XCTAssertEqual(d.view.text,"제1조")
+        m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="第1條"}))
+        XCTAssertEqual(d.view.text,"第1條")
+        m.toggleNumbers();m.text("1")
+        m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="①"}))
+        XCTAssertEqual(d.view.text,"第1條①")
+        m.text(".");m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="…"}))
+        XCTAssertEqual(d.view.text,"第1條①…")
+        m.numericField=true;m.text("1");XCTAssertTrue(m.composition.isEmpty)
+        XCTAssertEqual(d.view.text,"第1條①…1")
+    }
+    func testLongPressSlideSelectionAtKeyboardEdges() throws {
+        for width:CGFloat in [320,390,430,844] {
+            for x in [CGFloat(4),width/2-16,width-36] {
+                let touches=KeyboardTouchCoordinator();touches.width=width
+                let key=try XCTUnwrap(LayoutCatalog.numbers.flatMap{$0}.first{$0.label=="1"})
+                let anchor=CGRect(x:x,y:90,width:32,height:44)
+                touches.frames=[key.id:anchor];touches.updateKeys([[key]]);touches.begin(key.id,holdingShift:false)
+                touches.showAlternatives(start:key.id,key:key)
+                let popup=try XCTUnwrap(touches.alternatives)
+                XCTAssertGreaterThanOrEqual(popup.frame.minX,0);XCTAssertLessThanOrEqual(popup.frame.maxX,width)
+                XCTAssertEqual(touches.selectedAlternative(start:key.id,point:CGPoint(x:anchor.midX,y:anchor.midY)),"1")
+                for index in popup.values.indices {
+                    let point=CGPoint(x:popup.frame.minX+(CGFloat(index)+0.5)*popup.cellWidth,y:anchor.midY)
+                    XCTAssertEqual(touches.selectedAlternative(start:key.id,point:point),popup.values[index])
+                }
+                XCTAssertNil(touches.selectedAlternative(start:key.id,point:CGPoint(x:anchor.midX,y:anchor.maxY+100)))
+                touches.end(key.id);XCTAssertNil(touches.alternatives)
+            }
+        }
+    }
+    func testSupplementaryHanjaFontHasRealGlyph() throws {
+        XCTAssertTrue(CandidateTypography.usesFallback("𠄬".unicodeScalars.first!))
+        XCTAssertFalse(CandidateTypography.usesFallback("조".unicodeScalars.first!))
+        let font=CTFontCreateWithName("FusionCandidateFallback-Regular" as CFString,20,nil)
+        for character in "𠄬𠮟𩸽𩹉𰻞" {
+            XCTAssertTrue(CandidateTypography.usesFallback(character.unicodeScalars.first!))
+            let string=NSAttributedString(string:String(character),attributes:[NSAttributedString.Key(kCTFontAttributeName as String):font])
+            let line=CTLineCreateWithAttributedString(string)
+            let runs=CTLineGetGlyphRuns(line) as! [CTRun]
+            XCTAssertEqual(CTLineGetGlyphCount(line),1)
+            for run in runs {
+                var glyphs=Array(repeating:CGGlyph(0),count:CTRunGetGlyphCount(run))
+                CTRunGetGlyphs(run,CFRange(location:0,length:0),&glyphs)
+                XCTAssertFalse(glyphs.contains(0))
+            }
+        }
+    }
     func testFlickNoneAndShiftedSymbol() throws {
         let m=try model(.english),d=Document();d.attach(m)
         let key=try XCTUnwrap(m.rows.flatMap{$0}.first{$0.code == "Q"})
@@ -677,9 +760,67 @@ import SwiftUI
         let m=try model(.japanese),d=Document();d.attach(m)
         for c in "nihongowobenkyou" { m.text(String(c)) }
         m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="日本語"}))
-        XCTAssertEqual(d.committed,"日本語");XCTAssertTrue(d.marked.hasPrefix("を"))
+        XCTAssertEqual(d.committed,"");XCTAssertEqual(d.marked,"日本語"+m.engine.composition)
         m.enter();XCTAssertTrue(d.text.hasPrefix("日本語を"));XCTAssertEqual(d.marked,"")
         XCTAssertFalse(d.text.contains("日本語日本語"))
+    }
+    func testJapanesePartialConversionInTextAndSearchFields() throws {
+        for type in [UIKeyboardType.default,.URL,.webSearch] {
+            let m=try model(.japanese),d=AddressDocument();d.keyboardType=type;d.attach(m)
+            m.text("nihongowobenkyou")
+            m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="日本語"}))
+            XCTAssertEqual(d.field.text,"日本語"+m.engine.composition)
+            XCTAssertNotNil(d.field.markedTextRange)
+            m.cursor(-1)
+            let selection=try XCTUnwrap(d.field.selectedTextRange)
+            XCTAssertEqual(d.field.offset(from:d.field.beginningOfDocument,to:selection.start),3+m.engine.compositionCursorUTF16)
+            m.cursor(1);m.space()
+            XCTAssertEqual(d.field.text,"日本語"+m.engine.composition)
+            // Typing during conversion can implicitly commit Mozc's preceding
+            // segment while starting another: the earlier prefix must survive.
+            m.text("suru")
+            XCTAssertTrue(d.field.text?.hasPrefix("日本語を")==true)
+            m.enter()
+            XCTAssertTrue(d.field.text?.hasPrefix("日本語を")==true)
+            XCTAssertFalse(d.field.text?.contains("日本語日本語")==true)
+            XCTAssertNil(d.field.markedTextRange)
+        }
+        let m=try model(.japanese),d=TextViewDocument();d.attach(m)
+        m.text("nihongowobenkyou")
+        m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="日本語"}))
+        for _ in 0..<30 where !m.composition.isEmpty { m.backspace() }
+        XCTAssertEqual(d.view.text,"日本語");XCTAssertNil(d.view.markedTextRange)
+        m.text("nihongo");m.enter();XCTAssertEqual(d.view.text,"日本語にほんご")
+        m.text("nihongowobenkyou")
+        m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text=="日本語"}))
+        let beforeSwitch=d.view.text
+        m.store.settings.modes.append(.init(language:.english));m.switchMode(1)
+        XCTAssertEqual(d.view.text,beforeSwitch);XCTAssertNil(d.view.markedTextRange)
+        m.text("hello");m.commit();XCTAssertTrue(d.view.text.hasSuffix("hello"))
+    }
+    func testJapaneseMixedNumbersAndLongPressValues() throws {
+        let m=try model(.japanese),d=TextViewDocument();d.attach(m)
+        func choose(_ value:String) throws {
+            while m.engine.hasMoreCandidates { m.loadMoreCandidates(after:try XCTUnwrap(m.candidates.last)) }
+            if !m.candidates.contains(where:{$0.text==value}) {
+                m.space()
+                while m.engine.hasMoreCandidates { m.loadMoreCandidates(after:try XCTUnwrap(m.candidates.last)) }
+            }
+            m.commit(candidate:try XCTUnwrap(m.candidates.first{$0.text==value}))
+        }
+        m.text("dai");m.toggleSymbols();m.text("1");m.toggleSymbols();m.text("jou")
+        try choose("第1条");XCTAssertEqual(d.view.text,"第1条")
+        m.toggleNumbers();m.text("1");try choose("一")
+        m.text("1");try choose("①")
+        m.text(".");try choose("…")
+        XCTAssertEqual(d.view.text,"第1条一①…")
+        m.text("½");m.commit();m.toggleNumbers();m.text("é");m.commit()
+        XCTAssertEqual(d.view.text,"第1条一①…½é")
+        let rows=LayoutCatalog.rows(for:.init(language:.japanese),numberRow:true)
+        XCTAssertTrue(try XCTUnwrap(rows.flatMap{$0}.first{$0.label=="e"}).values.contains("é"))
+        XCTAssertTrue(try XCTUnwrap(rows.flatMap{$0}.first{$0.label=="1"}).values.contains("½"))
+        m.numericField=true;m.text("1")
+        XCTAssertTrue(m.composition.isEmpty);XCTAssertEqual(d.view.text,"第1条一①…½é1")
     }
     func testPinyinSelectionDoesNotDuplicateOrLoseSuffix() async throws {
         let m=try model(.pinyin),d=Document();d.attach(m)

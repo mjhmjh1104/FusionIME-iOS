@@ -11,12 +11,17 @@ final class PortParityTests:XCTestCase {
         let url=try XCTUnwrap(Bundle.module.url(forResource:"hanja-upstream",withExtension:"json",subdirectory:"Fixtures"))
         let fixtures=try JSONDecoder().decode([Fixture].self,from:Data(contentsOf:url)),dictionary=try HanjaDictionary()
         for fixture in fixtures {
-            let actual=dictionary.candidates(fixture.input,phrase:fixture.phrase)
-            // Code units distinguish original compatibility ideographs from unified ones.
-            XCTAssertEqual(actual.map{Array($0.text.utf16)},fixture.expected.map{Array($0.text.utf16)},"\(fixture.input), phrase=\(fixture.phrase)")
-            XCTAssertEqual(actual.map(\.score),fixture.expected.map(\.score))
-            XCTAssertEqual(actual.map(\.annotation),fixture.expected.map(\.annotation))
-            XCTAssertEqual(Set(actual.map(\.id)).count,actual.count)
+            let all=dictionary.candidates(fixture.input,phrase:fixture.phrase)
+            // The original measured output UTF-16 length, so supplementary Hanzi
+            // were excluded in word mode and sorted as two syllables in phrase
+            // mode. Compare the unchanged BMP ordering and metadata separately.
+            let bmp:(String)->Bool = { $0.unicodeScalars.allSatisfy{$0.value<=0xffff} }
+            let actual=all.filter{bmp($0.text)}
+            let expected=Candidate.unique(fixture.expected.filter{bmp($0.text)}.map{Candidate($0.text,score:$0.score,annotation:$0.annotation)})
+            XCTAssertEqual(actual.map{Array($0.text.utf16)},expected.map{Array($0.text.utf16)},"\(fixture.input), phrase=\(fixture.phrase)")
+            XCTAssertEqual(actual.map(\.score),expected.map(\.score))
+            XCTAssertEqual(actual.map(\.annotation),expected.map(\.annotation))
+            XCTAssertEqual(Set(all.map(\.id)).count,all.count)
         }
         for language in [InputLanguage.korean,.jyutping,.english] {
             let e=engine(language),text=language == .korean ? String(repeating:"아",count:80):String(repeating:"a",count:80)

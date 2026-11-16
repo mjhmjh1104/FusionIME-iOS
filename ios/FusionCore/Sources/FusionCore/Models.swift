@@ -252,6 +252,25 @@ public struct Candidate: Equatable, Identifiable, Sendable {
         self.annotation=annotation;self.focused=focused
     }
     public func consuming(_ count:Int) -> Self { Self(text,reading:reading,score:score,nativeID:nativeID,nativeGeneration:nativeGeneration,consumedUTF16:count,annotation:annotation,focused:focused) }
+    static func unique(_ candidates:[Self])->[Self] {
+        var positions:[Data:Int]=[:],result:[Self]=[]
+        for candidate in candidates {
+            guard !candidate.text.isEmpty else { continue }
+            // Keep distinct compatibility Han glyphs; normalize combining Kana/Hangul.
+            let compatibility=candidate.text.unicodeScalars.contains { (0xf900...0xfaff).contains($0.value) || (0x2f800...0x2fa1f).contains($0.value) }
+            let text=compatibility ? candidate.text:candidate.text.precomposedStringWithCanonicalMapping
+            let key=Data(text.utf8)
+            if let index=positions[key] {
+                // Keep the native selection token and focus when a literal has
+                // the same visible text. Losing them breaks segmented conversion.
+                let old=result[index]
+                if candidate.focused && !old.focused || candidate.nativeID != nil && old.nativeID == nil {
+                    result[index]=candidate
+                }
+            } else { positions[key]=result.count;result.append(candidate) }
+        }
+        return result
+    }
 }
 
 struct ImportedTables: Decodable {

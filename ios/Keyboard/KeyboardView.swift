@@ -78,12 +78,27 @@ struct KeyboardView:View {
         .padding(.horizontal,4).padding(.top,3).padding(.bottom,5)
         .background(KeyboardPalette.background)
         .background(GeometryReader { geometry in
-            Color.clear.onAppear { wide=geometry.size.width>550 }
-                .onChange(of:geometry.size.width) { wide=$0>550 }
+            Color.clear.onAppear { wide=geometry.size.width>550;touches.width=geometry.size.width }
+                .onChange(of:geometry.size.width) { wide=$0>550;touches.width=$0 }
         })
         .foregroundStyle(.primary).tint(.primary)
         .preferredColorScheme(store.colorScheme)
         .coordinateSpace(name:"fusion.keys")
+        .overlay(alignment:.topLeading) {
+            if let popup=touches.alternatives {
+                HStack(spacing:0) {
+                    ForEach(Array(popup.values.enumerated()),id:\.offset) { index,value in
+                        Text(LatinKeyValue.display(value)).font(.system(size:26)).minimumScaleFactor(0.6).lineLimit(1)
+                            .frame(width:popup.cellWidth,height:popup.frame.height)
+                            .foregroundStyle(popup.selected==index ? Color.white:Color.primary)
+                            .background(popup.selected==index ? Color.accentColor:Color.clear,in:RoundedRectangle(cornerRadius:6))
+                    }
+                }
+                .background(KeyboardPalette.key,in:RoundedRectangle(cornerRadius:8))
+                .shadow(color:.black.opacity(0.3),radius:4,y:2)
+                .offset(x:popup.frame.minX,y:popup.frame.minY).allowsHitTesting(false)
+            }
+        }
         .onPreferenceChange(KeyFramesPreference.self) { frames in
             touches.frames=frames
             touches.updateKeys(model.rows)
@@ -143,7 +158,7 @@ struct KeyboardView:View {
     private func candidateView(_ candidate:Candidate)->some View {
         Button { model.commit(candidate:candidate) } label: {
             VStack(spacing:0) {
-                Text(candidate.text).font(.system(size:candidate.annotation.isEmpty ? 20:18)).lineLimit(1)
+                CandidateTypography.text(candidate.text,size:candidate.annotation.isEmpty ? 20:18).lineLimit(1)
                 if !candidate.annotation.isEmpty { Text(candidate.annotation).font(.system(size:9)).foregroundStyle(.secondary).lineLimit(1) }
             }
                 .padding(.horizontal,12).frame(height:candidateHeight)
@@ -298,6 +313,7 @@ struct KeyCap:View {
     @State private var direction=0
     @State private var longPressed=false
     @State private var startKey:KeySpec?
+    @State private var holdTask:Task<Void,Never>?
     @GestureState private var tracking=false
     private var highlighted:Bool { key.flick || settings.touchMode == .flick ? pressed:touches.active.values.contains(key.id) }
     private var labels:[String] { key.hints ?? key.values }
@@ -311,14 +327,27 @@ struct KeyCap:View {
                         longPressed=false
                         touches.begin(key.id,holdingShift:pressBegan())
                         startKey=key.flick ? touches.key(key.id,start:key.id) ?? key:touches.target(value.startLocation,correct:settings.touchCorrection,learn:true,start:key.id) ?? key
+                        if let startKey,!key.flick,startKey.values.count>1 {
+                            holdTask=Task { @MainActor in
+                                do { try await Task.sleep(nanoseconds:350_000_000) } catch { return }
+                                guard !Task.isCancelled,self.startKey != nil else { return }
+                                longPressed=true
+                                touches.showAlternatives(start:key.id,key:startKey)
+                            }
+                        }
                     }
+                    if longPressed { touches.trackAlternatives(start:key.id,point:value.location);return }
+                    if max(abs(value.translation.width),abs(value.translation.height))>settings.flickSensitivity { holdTask?.cancel();holdTask=nil }
                     pressed=true;direction=flickDirection(value.translation)
                     if !key.flick && settings.touchMode == .seek {
                         touches.highlight(start:key.id,key:touches.target(value.location,correct:settings.touchCorrection,learn:false,start:key.id,preferCurrent:preferCurrent))
                     }
                 }.onEnded { value in
                     defer { endPress() }
-                    guard !longPressed else { return }
+                    if longPressed {
+                        if let value=touches.selectedAlternative(start:key.id,point:value.location) { send(value) }
+                        return
+                    }
                     let preferCurrent=refreshKeys()
                     let selected=touches.key(startKey?.id ?? key.id,start:key.id,preferCurrent:preferCurrent) ?? startKey ?? key
                     let direction=flickDirection(value.translation)
@@ -330,20 +359,16 @@ struct KeyCap:View {
                     else if direction==4 { flickAction(settings.flickDown,selected,touches.holdingShift(key.id)) }
                     else { send(selected.values[0]) }
                 })
-                .simultaneousGesture(LongPressGesture(minimumDuration:0.35).onEnded { _ in
-                    if key.values.count>1 && !key.flick { longPressed=true;pressed=false;touches.end(key.id) }
-                })
                 .accessibilityAction {
                     let preferCurrent=refreshKeys()
                     send((touches.key(key.id,preferCurrent:preferCurrent) ?? key).values[0])
                 }
                 .accessibilityActions { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { send(value) } } }
-                .contextMenu { ForEach(Array(key.values.dropFirst().enumerated()),id:\.offset) { _,value in Button(LatinKeyValue.display(value)) { send(value);pressed=false } } }
                 .accessibilityLabel(key.label).accessibilityAddTraits(.isButton)
-                .onChange(of:tracking) { if !$0 { endPress() } }
+                .onChange(of:tracking) { if !$0 { DispatchQueue.main.async { if !tracking { endPress() } } } }
                 .onDisappear { endPress() }
     }
-    private func endPress() { pressed=false;longPressed=false;touches.end(key.id);startKey=nil }
+    private func endPress() { holdTask?.cancel();holdTask=nil;pressed=false;longPressed=false;touches.end(key.id);startKey=nil }
     private func send(_ value:String) { action(value,touches.holdingShift(key.id)) }
     var face:some View {
         VStack(spacing:1) {
@@ -355,7 +380,7 @@ struct KeyCap:View {
             .shadow(color:.black.opacity(0.18),radius:0,y:1)
             .contentShape(Rectangle()).foregroundStyle(.primary)
             .overlay(alignment:.top) {
-                if highlighted && settings.keyPreview {
+                if highlighted && settings.keyPreview && !longPressed {
                     Text(key.flick ? labels[min(direction,labels.count-1)]:key.label)
                         .font(.system(size:30)).lineLimit(1).fixedSize()
                         .padding(.horizontal,10).padding(.vertical,8)
